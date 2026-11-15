@@ -23,6 +23,11 @@ export default function App() {
   const [activeId, setActiveId] = useState(1);
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
+  const [profileName, setProfileName] = useState(() => localStorage.getItem("bg-profile-name") || "Пользователь");
+  const [profileTag, setProfileTag] = useState(() => localStorage.getItem("bg-profile-tag") || "user");
+  const [profileStatus, setProfileStatus] = useState(() => localStorage.getItem("bg-profile-status") || "В сети");
+  const [profileAbout, setProfileAbout] = useState(() => localStorage.getItem("bg-profile-about") || "Привет! Я пользуюсь BrainGram 👋");
+  const [profileSaved, setProfileSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<"chats" | "servers" | "friends" | "notifications" | "profile">("chats");
   const [showChannelModal, setShowChannelModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
@@ -121,14 +126,31 @@ export default function App() {
         <div className="user-panel"><div className="user-avatar">U<i/></div><div className="user-meta"><strong>Пользователь</strong><small>В сети</small></div><button title="Микрофон"><Mic size={18}/></button><button title="Настройки"><Settings size={18}/></button></div>
       </aside>
 
-      <section className="chat-panel">
+      {activeTab === "profile" ? <section className="profile-panel">
+        <div className="profile-topbar"><UserRound size={20}/><strong>Мой профиль</strong></div>
+        <div className="profile-cover"><div className="profile-avatar-large">{(profileName.trim()[0] || "U").toUpperCase()}<span className="profile-online-dot"/></div></div>
+        <div className="profile-card">
+          <div className="profile-card-heading"><div><h1>{profileName || "Пользователь"}</h1><p>@{profileTag || "user"}</p></div><span className="profile-status-pill"><i/>{profileStatus}</span></div>
+          <div className="profile-divider"/>
+          <h2>О СЕБЕ</h2><p className="profile-about-preview">{profileAbout || "Расскажи немного о себе..."}</p>
+          <div className="profile-divider"/>
+          <h2>РЕДАКТИРОВАТЬ ПРОФИЛЬ</h2>
+          <form className="profile-form" onSubmit={(event) => { event.preventDefault(); localStorage.setItem("bg-profile-name",profileName.trim() || "Пользователь"); localStorage.setItem("bg-profile-tag",profileTag.trim().replace(/^@/,"") || "user"); localStorage.setItem("bg-profile-status",profileStatus); localStorage.setItem("bg-profile-about",profileAbout.trim()); setProfileSaved(true); window.setTimeout(() => setProfileSaved(false),2200); }}>
+            <label htmlFor="profile-name">ИМЯ</label><input id="profile-name" maxLength={32} value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="Как тебя называть?"/>
+            <label htmlFor="profile-tag">ИМЯ ПОЛЬЗОВАТЕЛЯ</label><div className="profile-tag-input"><span>@</span><input id="profile-tag" maxLength={24} value={profileTag} onChange={(event) => setProfileTag(event.target.value.replace(/\s/g,""))} placeholder="username"/></div>
+            <label htmlFor="profile-status">СТАТУС</label><select id="profile-status" value={profileStatus} onChange={(event) => setProfileStatus(event.target.value)}><option>В сети</option><option>Не беспокоить</option><option>Не активен</option><option>Невидимый</option></select>
+            <label htmlFor="profile-about">О СЕБЕ</label><textarea id="profile-about" rows={3} maxLength={160} value={profileAbout} onChange={(event) => setProfileAbout(event.target.value)} placeholder="Напиши пару слов о себе..."/>
+            <div className="profile-form-footer"><small>{profileAbout.length}/160</small><button type="submit">{profileSaved ? "Сохранено ✓" : "Сохранить изменения"}</button></div>
+          </form>
+        </div>
+      </section> : <section className="chat-panel">
         <header className="chat-header"><div className="header-channel"><Hash size={23}/><strong>{active.name}</strong></div><div className="header-tools"><button title="Уведомления"><Bell/></button><button title="Закреплённое"><Pin/></button><button title="Участники"><Users/></button><div className="header-search"><Search size={16}/><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Поиск каналов"/></div><button title="Входящие"><Inbox/></button><button title="Справка"><MessageCircle/></button></div></header>
         <div className="chat-content">
           <div className="channel-welcome"><div className="hash-welcome"><Hash size={34}/></div><h1>Добро пожаловать в #{active.name}!</h1><p>Это начало канала #{active.name}.</p></div>
           <div className="message-list">{(messages[active.id] ?? []).map((message, index) => <article key={index} className="message-entry"><div className={`message-avatar ${index % 2 ? "avatar-blue" : "avatar-purple"}`}>{index % 2 ? "M" : "U"}</div><div className="message-body"><div className="message-author">{index % 2 ? "Мария" : "Пользователь"} <time>Сегодня</time></div><p>{message}</p></div></article>)}</div>
         </div>
         <form className="message-composer" onSubmit={(e) => { e.preventDefault(); sendMessage(); }}><button type="button" title="Прикрепить файл"><Plus size={21}/></button><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Написать в #${active.name}`}/><button type="button" title="Прикрепить файл"><Paperclip size={19}/></button><button type="button" title="Эмодзи"><Smile size={20}/></button><button className="send-message" type="submit" title="Отправить"><Send size={18}/></button></form>
-      </section>
+      </section>}
       <aside className="member-sidebar"><div className="member-title">УЧАСТНИКИ — 3</div><div className="member-group">В СЕТИ — 3</div><div className="member"><div className="member-avatar purple">U<i/></div><span>Пользователь</span><b>👑</b></div><div className="member"><div className="member-avatar blue">M<i/></div><span>Мария</span></div><div className="member"><div className="member-avatar green">D<i/></div><span>Денис</span></div></aside>
       <nav className="bottom-nav" aria-label="Основная навигация">{([{id:"chats",label:"Чаты",icon:MessageCircle},{id:"servers",label:"Серверы",icon:Server},{id:"friends",label:"Друзья",icon:Users},{id:"notifications",label:"Уведомления",icon:Bell},{id:"profile",label:"Профиль",icon:UserRound}] as const).map((item) => { const Icon = item.icon; return <button key={item.id} className={activeTab === item.id ? "bottom-nav-item selected" : "bottom-nav-item"} onClick={() => setActiveTab(item.id)}><Icon size={21}/><span>{item.label}</span></button>; })}</nav>\n      {showChannelModal && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowChannelModal(false); }}>
         <section className="channel-modal" role="dialog" aria-modal="true" aria-labelledby="channel-modal-title">
