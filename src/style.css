@@ -9,3 +9,14 @@ button{font:inherit;cursor:pointer}
 .empty-search{color:#949ba4;font-size:12px;padding:12px}
 @media(max-width:1050px){.discord-shell{grid-template-columns:64px 220px minmax(0,1fr)}.member-sidebar{display:none}}
 @media(max-width:650px){.discord-shell{grid-template-columns:58px minmax(0,1fr)}.channel-sidebar{display:none}.chat-header{padding:0 10px}.header-tools{gap:8px}.header-tools>button:nth-child(1),.header-tools>button:nth-child(2),.header-tools>button:nth-child(4),.header-tools>button:nth-child(5){display:none}.header-search{width:100px}.channel-welcome{padding:22px 13px 15px}.channel-welcome h1{font-size:19px}.message-list{padding:8px 12px 16px}.message-composer{margin:0 9px 12px}.message-composer>button:nth-last-child(3){display:none}}
+
+/* Server and channel management */
+.channel-row{display:flex;align-items:center;gap:2px;border-radius:4px}
+.channel-row .channel-item{flex:1;min-width:0}
+.channel-row.active-channel-row{background:#404249}
+.channel-row.active-channel-row .channel-item{background:transparent}
+.delete-channel{display:none;flex:none;border:0;background:transparent;color:#949ba4;padding:7px;border-radius:4px}
+.channel-row:hover .delete-channel{display:grid;place-items:center}
+.delete-channel:hover{color:#ed4245;background:#35373c}
+.server-title{cursor:default}
+@media(max-width:650px){.channel-row .delete-channel{display:none}}
