@@ -194,29 +194,10 @@ function AppContent() {
           </div>
         </div>
       </section> : activeTab === "profile" ? <section className="profile-panel profile-showcase">
-         <div className="profile-topbar"><button type="button" className="profile-back" onClick={() => setActiveTab("chats")}>‹</button><strong>Профиль</strong><button className="profile-search" type="button" aria-label="Поиск"><Search size={21}/></button></div>
-         <div className="profile-hero">
-           <div className="profile-cover"><div className="profile-avatar-large">{(profileName.trim()[0] || "U").toUpperCase()}<span className="profile-online-dot"/></div></div>
-           <div className="profile-hero-content"><button className="profile-edit-button" type="button" onClick={() => setShowProfileEditor((value) => !value)}><Settings size={16}/> {showProfileEditor ? "Закрыть" : "Редактировать профиль"}</button>
-             <h1>{profileName || "Пользователь"}</h1><div className="profile-online-label"><i/>{profileStatus}</div><p className="profile-hero-tag">@{profileTag || "user"}</p>{profileAbout && <p className="profile-hero-about">{profileAbout}</p>}
-           </div>
+         <div className="simple-profile-card">
+           <div className="simple-profile-avatar">{(profileName.trim()[0] || "U").toUpperCase()}</div>
+           <h1>{profileName || "Пользователь"}</h1>
          </div>
-         <div className="profile-feature-grid">
-           <button type="button" className="profile-feature-card" onClick={() => setShowProfileEditor(true)}><span className="feature-icon feature-blue"><Inbox size={25}/></span><strong>Сохранённое</strong><small>Твои заметки и файлы</small></button>
-           <button type="button" className="profile-feature-card" onClick={() => setActiveTab("chats")}><span className="feature-icon feature-green"><MessageCircle size={25}/></span><strong>Сообщения</strong><small>Твои чаты</small></button>
-           <button type="button" className="profile-feature-card" onClick={() => setActiveTab("friends")}><span className="feature-icon feature-purple"><Users size={25}/></span><strong>Контакты</strong><small>{friends.length} друзей</small></button>
-           <button type="button" className="profile-feature-card" onClick={() => setShowSettings(true)}><span className="feature-icon feature-orange"><Settings size={25}/></span><strong>Настройки</strong><small>Аккаунт и приложение</small></button>
-         </div>
-         {showProfileEditor && <div className="profile-card profile-edit-card">
-           <h2>РЕДАКТИРОВАТЬ ПРОФИЛЬ</h2>
-           <form className="profile-form" onSubmit={(event) => { event.preventDefault(); localStorage.setItem("bg-profile-name",profileName.trim() || "Пользователь"); localStorage.setItem("bg-profile-tag",profileTag.trim().replace(/^@/,"") || "user"); localStorage.setItem("bg-profile-status",profileStatus); localStorage.setItem("bg-profile-about",profileAbout.trim()); setProfileSaved(true); window.setTimeout(() => setProfileSaved(false),2200); }}>
-             <label htmlFor="profile-name">ИМЯ</label><input id="profile-name" maxLength={32} value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="Как тебя называть?"/>
-             <label htmlFor="profile-tag">ИМЯ ПОЛЬЗОВАТЕЛЯ</label><div className="profile-tag-input"><span>@</span><input id="profile-tag" maxLength={24} value={profileTag} onChange={(event) => setProfileTag(event.target.value.replace(/\s/g,""))} placeholder="username"/></div>
-             <label htmlFor="profile-status">СТАТУС</label><select id="profile-status" value={profileStatus} onChange={(event) => setProfileStatus(event.target.value)}><option>В сети</option><option>Не беспокоить</option><option>Не активен</option><option>Невидимый</option></select>
-             <label htmlFor="profile-about">О СЕБЕ</label><textarea id="profile-about" rows={3} maxLength={160} value={profileAbout} onChange={(event) => setProfileAbout(event.target.value)} placeholder="Напиши пару слов о себе..."/>
-             <div className="profile-form-footer"><small>{profileAbout.length}/160</small><button type="submit">{profileSaved ? "Сохранено ✓" : "Сохранить изменения"}</button></div>
-           </form>
-         </div>}
        </section> : <section className="chat-panel">
         <header className="chat-header"><div className="header-channel"><Hash size={23}/><strong>{active.name}</strong></div><div className="header-tools"><button title="Уведомления"><Bell/></button><button title="Закреплённое"><Pin/></button><button title="Участники"><Users/></button><div className="header-search"><Search size={16}/><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Поиск каналов"/></div><button title="Входящие"><Inbox/></button><button title="Справка"><MessageCircle/></button></div></header>
         <div className="chat-content">
