@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2 } from "lucide-react";
+import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string };
 type Channel = { id: number; serverId: number; name: string; message: string; time: string; initials: string; color: string; unread?: number };
@@ -23,6 +23,7 @@ export default function App() {
   const [activeId, setActiveId] = useState(1);
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
+  const [activeTab, setActiveTab] = useState<"chats" | "servers" | "friends" | "notifications" | "profile">("chats");
   const [showChannelModal, setShowChannelModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
   const [newChannelDescription, setNewChannelDescription] = useState("");
@@ -129,7 +130,7 @@ export default function App() {
         <form className="message-composer" onSubmit={(e) => { e.preventDefault(); sendMessage(); }}><button type="button" title="Прикрепить файл"><Plus size={21}/></button><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Написать в #${active.name}`}/><button type="button" title="Прикрепить файл"><Paperclip size={19}/></button><button type="button" title="Эмодзи"><Smile size={20}/></button><button className="send-message" type="submit" title="Отправить"><Send size={18}/></button></form>
       </section>
       <aside className="member-sidebar"><div className="member-title">УЧАСТНИКИ — 3</div><div className="member-group">В СЕТИ — 3</div><div className="member"><div className="member-avatar purple">U<i/></div><span>Пользователь</span><b>👑</b></div><div className="member"><div className="member-avatar blue">M<i/></div><span>Мария</span></div><div className="member"><div className="member-avatar green">D<i/></div><span>Денис</span></div></aside>
-      {showChannelModal && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowChannelModal(false); }}>
+      <nav className="bottom-nav" aria-label="Основная навигация">{([{id:"chats",label:"Чаты",icon:MessageCircle},{id:"servers",label:"Серверы",icon:Server},{id:"friends",label:"Друзья",icon:Users},{id:"notifications",label:"Уведомления",icon:Bell},{id:"profile",label:"Профиль",icon:UserRound}] as const).map((item) => { const Icon = item.icon; return <button key={item.id} className={activeTab === item.id ? "bottom-nav-item selected" : "bottom-nav-item"} onClick={() => setActiveTab(item.id)}><Icon size={21}/><span>{item.label}</span></button>; })}</nav>\n      {showChannelModal && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowChannelModal(false); }}>
         <section className="channel-modal" role="dialog" aria-modal="true" aria-labelledby="channel-modal-title">
           <button className="modal-close" type="button" aria-label="Закрыть" onClick={() => setShowChannelModal(false)}>×</button>
           <div className="modal-icon"><Hash size={24}/></div>
