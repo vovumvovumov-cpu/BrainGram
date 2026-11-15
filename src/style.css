@@ -187,3 +187,34 @@ button{font:inherit;cursor:pointer}
 .notifications-empty strong{font-size:15px;color:#dbdee1}
 .notifications-empty p{font-size:12px;margin:0}
 @media(max-width:650px){.notifications-panel{grid-column:2;grid-row:1;width:100%;height:100%;min-height:0}.notifications-topbar{height:49px;min-height:49px;padding:0 11px}.notifications-topbar>button{font-size:10px;padding:0 8px}.notifications-content{padding:24px 12px 28px}.notifications-heading h1{font-size:21px}.notification-card{gap:10px;padding:12px 34px 12px 11px}.notification-avatar{width:38px;height:38px;border-radius:12px}.notification-copy>p{font-size:11px}}
+
+
+/* Friends page */
+.friends-panel{grid-column:3;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto;background:#313338}
+.friends-topbar{height:56px;min-height:56px;padding:0 22px;border-bottom:1px solid #26272b;display:flex;align-items:center;justify-content:space-between;color:#b5bac1}
+.friends-topbar>div{display:flex;align-items:center;gap:10px}.friends-topbar strong{font-size:15px;color:#f2f3f5}.friends-topbar>span{font-size:11px;color:#949ba4}
+.friends-content{width:min(760px,100%);margin:0 auto;padding:30px 26px 42px}
+.friends-hero{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.friends-hero h1{font-size:24px;letter-spacing:-.5px;margin:0 0 5px;color:#f2f3f5}.friends-hero p{font-size:12px;color:#949ba4;margin:0}
+.friends-hero-icon{width:54px;height:54px;border-radius:17px;background:#5865f222;color:#9da8ff;display:grid;place-items:center}
+.friend-add-form{padding:17px;border:1px solid #41434b;border-radius:11px;background:#2b2d31;margin-bottom:25px}
+.friend-add-copy{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}.friend-add-copy strong{font-size:13px;color:#f2f3f5}.friend-add-copy span{font-size:11px;color:#949ba4}
+.friend-add-controls{display:flex;gap:9px}.friend-add-controls>div{height:40px;min-width:0;flex:1;display:flex;align-items:center;gap:7px;padding:0 11px;border:1px solid #1e1f22;border-radius:8px;background:#1e1f22;color:#949ba4}
+.friend-add-controls>div:focus-within{border-color:#7985ff;box-shadow:0 0 0 3px #5865f222}.friend-add-controls input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:#f2f3f5;font:12px 'DM Sans',sans-serif}.friend-add-controls input::placeholder{color:#777e89}
+.friend-add-controls>button{height:40px;padding:0 13px;border:0;border-radius:8px;background:#5865f2;color:white;display:flex;align-items:center;gap:6px;font:600 11px 'DM Sans',sans-serif}.friend-add-controls>button:hover:not(:disabled){background:#4752c4}.friend-add-controls>button:disabled{opacity:.45;cursor:not-allowed}
+.friend-feedback{font-size:11px;line-height:1.5;color:#aeb8ff;margin:10px 0 0}
+.friend-section-heading{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}
+.friend-section-heading>div:first-child{display:flex;align-items:center;gap:9px}.friend-section-heading h2{font-size:11px;letter-spacing:.45px;text-transform:uppercase;color:#b5bac1;margin:0;font-weight:800}.friend-section-heading>div:first-child>span{font-size:10px;color:#949ba4;background:#41434b;border-radius:10px;padding:2px 7px}
+.friend-request-list,.friend-list{display:flex;flex-direction:column;gap:7px}
+.friend-card{min-height:66px;display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #41434b;border-radius:10px;background:#2b2d31}
+.friend-card:hover{background:#303238}
+.friend-avatar{position:relative;width:40px;height:40px;flex:none;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:800}
+.friend-avatar.purple{background:linear-gradient(145deg,#8b70dc,#5840a3)}.friend-avatar.blue{background:linear-gradient(145deg,#559bd2,#35618c)}.friend-avatar.green{background:linear-gradient(145deg,#4ba886,#286c57)}.friend-avatar.pink{background:linear-gradient(145deg,#d878ad,#914b83)}
+.friend-avatar i{position:absolute;right:-2px;bottom:-2px;width:12px;height:12px;border:2px solid #2b2d31;border-radius:50%}.friend-avatar i.online{background:#23a559}.friend-avatar i.idle{background:#e0a34b}
+.friend-details{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}.friend-details strong{font-size:12px;color:#f2f3f5}.friend-details span{font-size:10px;color:#949ba4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.friend-card-actions{display:flex;gap:7px}.friend-card-actions button{width:31px;height:31px;border-radius:8px;display:grid;place-items:center;font-size:19px}
+.friend-accept{border:0;background:#5865f2;color:#fff}.friend-accept:hover{background:#4752c4}.friend-decline{border:1px solid #4a4d55;background:transparent;color:#b5bac1}.friend-decline:hover{background:#ed424522;color:#ed7779}
+.friends-empty-small{padding:16px 13px;border:1px dashed #41434b;border-radius:9px;color:#858b95;font-size:11px}
+.friends-list-heading{margin-top:26px}.friend-search{height:30px;width:160px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:7px;background:#232428;color:#949ba4}.friend-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#f2f3f5;font:10px 'DM Sans',sans-serif}
+.friend-more{width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:#949ba4}.friend-more:hover{background:#41434b;color:#fff}
+@media(max-width:650px){.friends-panel{grid-column:2;grid-row:1;width:100%;height:100%;min-height:0}.friends-topbar{height:49px;min-height:49px;padding:0 12px}.friends-content{padding:24px 12px 28px}.friends-hero h1{font-size:21px}.friends-hero-icon{width:45px;height:45px}.friend-add-form{padding:13px}.friend-add-controls{gap:6px}.friend-add-controls>button{padding:0 9px;font-size:10px}.friend-search{width:125px}}
