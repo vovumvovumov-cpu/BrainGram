@@ -32,7 +32,10 @@ export default function AuthGate({ children }: Props) {
       if (mode === "signup") {
         const { data, error: authError } = await supabase.auth.signUp({
           email: email.trim(), password,
-          options: { data: { display_name: displayName.trim() || email.split("@")[0] } },
+          options: {
+            data: { display_name: displayName.trim() || email.split("@")[0] },
+            emailRedirectTo: `${window.location.origin}/BrainGram/`,
+          },
         });
         if (authError) throw authError;
         if (!data.session) setMessage("Аккаунт создан! Проверь почту и подтверди адрес, затем войди.");
