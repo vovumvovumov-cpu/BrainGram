@@ -114,3 +114,33 @@ button{font:inherit;cursor:pointer}
   .header-tools{gap:4px}
   .header-search{width:70px}
 }
+
+/* Profile page */
+.profile-panel{grid-column:3;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto;background:#313338}
+.profile-topbar{height:49px;min-height:49px;border-bottom:1px solid #26272b;display:flex;align-items:center;gap:10px;padding:0 20px;color:#b5bac1}
+.profile-topbar strong{font-size:14px;color:#f2f3f5}
+.profile-cover{height:150px;min-height:150px;background:linear-gradient(120deg,#343b70 0%,#5865f2 52%,#7a55a8 100%);position:relative;margin-bottom:56px}
+.profile-avatar-large{position:absolute;left:30px;bottom:-42px;width:92px;height:92px;border:7px solid #313338;border-radius:50%;background:linear-gradient(145deg,#8b70dc,#5840a3);display:grid;place-items:center;color:#fff;font-size:38px;font-weight:800}
+.profile-online-dot{position:absolute;right:0;bottom:0;width:22px;height:22px;border:4px solid #313338;border-radius:50%;background:#23a559}
+.profile-card{width:min(680px,100%);margin:0 auto;padding:0 30px 36px}
+.profile-card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.profile-card-heading h1{font-size:23px;line-height:1.2;margin:0 0 4px;color:#f2f3f5}
+.profile-card-heading p{margin:0;color:#949ba4;font-size:13px}
+.profile-status-pill{display:flex;align-items:center;gap:7px;background:#232428;border:1px solid #41434b;border-radius:20px;padding:7px 11px;color:#b5bac1;font-size:11px;white-space:nowrap}
+.profile-status-pill i{width:7px;height:7px;border-radius:50%;background:#23a559}
+.profile-divider{height:1px;background:#41434b;margin:22px 0}
+.profile-card h2{font-size:10px;letter-spacing:.7px;color:#b5bac1;margin:0 0 10px;font-weight:800}
+.profile-about-preview{font-size:13px;line-height:1.55;color:#dbdee1;margin:0;overflow-wrap:anywhere}
+.profile-form{display:flex;flex-direction:column;gap:8px}
+.profile-form label{font-size:10px;letter-spacing:.55px;font-weight:800;color:#b5bac1;margin-top:8px}
+.profile-form>input,.profile-form select,.profile-form textarea,.profile-tag-input{width:100%;border:1px solid #1e1f22;background:#1e1f22;border-radius:8px;color:#f2f3f5;padding:11px 12px;outline:none;font:13px 'DM Sans',sans-serif}
+.profile-form>input:focus,.profile-form select:focus,.profile-form textarea:focus,.profile-tag-input:focus-within{border-color:#7985ff;box-shadow:0 0 0 3px #5865f222}
+.profile-form select{color-scheme:dark}
+.profile-form textarea{resize:vertical;min-height:76px;line-height:1.5}
+.profile-tag-input{display:flex;align-items:center;gap:7px;color:#949ba4}
+.profile-tag-input input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#f2f3f5;font:13px 'DM Sans',sans-serif}
+.profile-form-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.profile-form-footer small{color:#949ba4;font-size:10px}
+.profile-form-footer button{border:0;border-radius:8px;background:#5865f2;color:white;padding:11px 16px;font:600 12px 'DM Sans',sans-serif;cursor:pointer}
+.profile-form-footer button:hover{background:#4752c4}
+@media(max-width:650px){.profile-panel{grid-column:2;grid-row:1;width:100%;height:100%;min-height:0}.profile-cover{height:120px;min-height:120px;margin-bottom:53px}.profile-avatar-large{left:17px;width:84px;height:84px;font-size:34px}.profile-card{padding:0 16px 28px}.profile-card-heading h1{font-size:20px}.profile-topbar{padding:0 12px}}
