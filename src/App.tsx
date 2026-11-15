@@ -28,6 +28,16 @@ export default function App() {
   const [profileStatus, setProfileStatus] = useState(() => localStorage.getItem("bg-profile-status") || "В сети");
   const [profileAbout, setProfileAbout] = useState(() => localStorage.getItem("bg-profile-about") || "Привет! Я пользуюсь BrainGram 👋");
   const [profileSaved, setProfileSaved] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, type: "message", title: "Новое сообщение", text: "Мария написала в канале #общий", time: "2 минуты назад", unread: true, initials: "М", color: "blue" },
+    { id: 2, type: "mention", title: "Тебя упомянули", text: "Денис отметил тебя в #разработка", time: "18 минут назад", unread: true, initials: "Д", color: "green" },
+    { id: 3, type: "friend", title: "Новая заявка в друзья", text: "Александр хочет добавить тебя в друзья", time: "1 час назад", unread: true, initials: "А", color: "purple" },
+    { id: 4, type: "server", title: "Приглашение на сервер", text: "Тебя пригласили присоединиться к новому сообществу", time: "Вчера", unread: false, initials: "B", color: "pink" },
+  ]);
+  const unreadNotifications = notifications.filter((item) => item.unread).length;
+  function markAllNotificationsRead() {
+    setNotifications((current) => current.map((item) => ({ ...item, unread: false })));
+  }
   const [activeTab, setActiveTab] = useState<"chats" | "servers" | "friends" | "notifications" | "profile">("chats");
   const [showChannelModal, setShowChannelModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
@@ -126,7 +136,22 @@ export default function App() {
         <div className="user-panel"><div className="user-avatar">U<i/></div><div className="user-meta"><strong>Пользователь</strong><small>В сети</small></div><button title="Микрофон"><Mic size={18}/></button><button title="Настройки"><Settings size={18}/></button></div>
       </aside>
 
-      {activeTab === "profile" ? <section className="profile-panel">
+      {activeTab === "notifications" ? <section className="notifications-panel">
+        <div className="notifications-topbar"><div><Bell size={20}/><strong>Уведомления</strong>{unreadNotifications > 0 && <span className="notification-count">{unreadNotifications}</span>}</div><button onClick={markAllNotificationsRead} disabled={unreadNotifications === 0}><Inbox size={16}/> Прочитать все</button></div>
+        <div className="notifications-content">
+          <div className="notifications-heading"><div><h1>Входящие</h1><p>Здесь собраны важные события BrainGram</p></div><span>{notifications.length} всего</span></div>
+          <div className="notification-list">
+            {notifications.map((item) => <article key={item.id} className={item.unread ? "notification-card unread-notification" : "notification-card"}>
+              <div className={`notification-avatar ${item.color}`}>{item.initials}</div>
+              <div className="notification-copy"><div className="notification-title-row"><strong>{item.title}</strong>{item.unread && <i/>}</div><p>{item.text}</p><time>{item.time}</time>
+                {item.type === "friend" && <div className="notification-actions"><button onClick={() => setNotifications((current) => current.map((entry) => entry.id === item.id ? { ...entry, unread: false } : entry))}>Принять</button><button onClick={() => setNotifications((current) => current.filter((entry) => entry.id !== item.id))}>Отклонить</button></div>}
+              </div>
+              <button className="notification-dismiss" title="Убрать уведомление" onClick={() => setNotifications((current) => current.filter((entry) => entry.id !== item.id))}>×</button>
+            </article>)}
+            {notifications.length === 0 && <div className="notifications-empty"><Bell size={32}/><strong>Пока тихо</strong><p>Когда появятся новые события, они будут здесь.</p></div>}
+          </div>
+        </div>
+      </section> : activeTab === "profile" ? <section className="profile-panel">
         <div className="profile-topbar"><UserRound size={20}/><strong>Мой профиль</strong></div>
         <div className="profile-cover"><div className="profile-avatar-large">{(profileName.trim()[0] || "U").toUpperCase()}<span className="profile-online-dot"/></div></div>
         <div className="profile-card">
