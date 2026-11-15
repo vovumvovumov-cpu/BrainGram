@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import AuthGate from "./components/AuthGate";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
@@ -12,7 +13,7 @@ const starterChannels: Channel[] = [
   { id: 4, serverId: 1, name: "мемы", message: "Денис отправил картинку", time: "Пн", initials: "Д", color: "green" },
 ];
 
-export default function App() {
+function AppContent() {
   const [servers, setServers] = useState<Server[]>(() => {
     try { const saved = localStorage.getItem("bg-servers"); return saved ? JSON.parse(saved) as Server[] : starterServers; } catch { return starterServers; }
   });
@@ -252,4 +253,8 @@ export default function App() {
       </div>}
     </main>
   );
+}
+
+export default function App() {
+  return <AuthGate><AppContent /></AuthGate>;
 }
