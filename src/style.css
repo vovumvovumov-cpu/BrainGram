@@ -311,3 +311,18 @@ button{font:inherit;cursor:pointer}
     overflow:hidden;
   }
 }
+
+
+/* Keep the floating navigation pinned to the actual bottom of the mobile viewport */
+@media(max-width:650px){
+  .bottom-nav{
+    position:fixed;
+    left:14px;
+    right:14px;
+    bottom:8px;
+    width:auto;
+    margin:0;
+    align-self:auto;
+    justify-self:auto;
+  }
+}
