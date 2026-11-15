@@ -326,3 +326,23 @@ button{font:inherit;cursor:pointer}
     justify-self:auto;
   }
 }
+
+
+/* Username replaces the mobile tab buttons */
+@media(max-width:650px){
+  .bottom-nav.user-name-bar{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#f2f3f5;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  .bottom-nav.user-name-bar span{
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+}
