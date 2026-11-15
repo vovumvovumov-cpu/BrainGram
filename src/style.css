@@ -293,3 +293,21 @@ button{font:inherit;cursor:pointer}
     overflow:hidden;
   }
 }
+
+
+/* Floating rounded left server rail */
+@media(max-width:650px){
+  .server-rail{
+    width:calc(100% - 8px);
+    height:calc(100% - 20px);
+    justify-self:center;
+    align-self:center;
+    margin:0 4px;
+    padding:12px 0;
+    border:1px solid #55586a;
+    border-radius:22px;
+    background:rgba(30,31,34,.97);
+    box-shadow:0 8px 28px #0006, inset 0 1px 0 #ffffff0a;
+    overflow:hidden;
+  }
+}
