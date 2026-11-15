@@ -20,3 +20,33 @@ button{font:inherit;cursor:pointer}
 .delete-channel:hover{color:#ed4245;background:#35373c}
 .server-title{cursor:default}
 @media(max-width:650px){.channel-row .delete-channel{display:none}}
+
+/* Polished create-channel dialog */
+.modal-backdrop{position:fixed;inset:0;z-index:50;background:#090a0dcc;backdrop-filter:blur(5px);display:grid;place-items:center;padding:18px;animation:modalFade .16s ease-out}
+.channel-modal{position:relative;width:min(440px,100%);background:#2b2d31;border:1px solid #41434b;border-radius:16px;padding:30px;box-shadow:0 24px 80px #0008;animation:modalRise .2s ease-out}
+.modal-close{position:absolute;right:16px;top:14px;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#949ba4;font-size:25px;line-height:1;cursor:pointer}
+.modal-close:hover{background:#393b42;color:#fff}
+.modal-icon{width:48px;height:48px;border-radius:14px;background:#5865f222;color:#8290ff;display:grid;place-items:center;margin-bottom:17px}
+.channel-modal h2{font-size:22px;line-height:1.25;margin:0;color:#f2f3f5;letter-spacing:-.45px}
+.modal-subtitle{font-size:13px;line-height:1.5;color:#b5bac1;margin:8px 0 24px}
+.modal-subtitle strong{color:#dbdee1}
+.channel-modal form{display:flex;flex-direction:column;gap:9px}
+.channel-modal label{font-size:10px;font-weight:800;letter-spacing:.65px;color:#b5bac1;margin-top:7px}
+.channel-modal label span{font-size:9px;color:#777e89;font-weight:600;margin-left:5px}
+.channel-name-input{height:46px;border:1px solid #1e1f22;background:#1e1f22;border-radius:8px;display:flex;align-items:center;gap:9px;padding:0 12px;color:#949ba4;transition:border-color .15s,box-shadow .15s}
+.channel-name-input:focus-within{border-color:#7985ff;box-shadow:0 0 0 3px #5865f222}
+.channel-name-input input{width:100%;border:0;outline:0;background:transparent;color:#f2f3f5;font:14px 'DM Sans',sans-serif}
+.channel-name-input input::placeholder,.channel-modal textarea::placeholder{color:#777e89}
+.channel-modal textarea{width:100%;resize:vertical;min-height:76px;border:1px solid #1e1f22;background:#1e1f22;border-radius:8px;padding:12px;color:#f2f3f5;outline:0;font:13px/1.5 'DM Sans',sans-serif}
+.channel-modal textarea:focus{border-color:#7985ff;box-shadow:0 0 0 3px #5865f222}
+.modal-hint{display:flex;align-items:center;gap:7px;color:#949ba4;font-size:11px;margin-top:5px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.modal-actions button{height:40px;padding:0 16px;border-radius:8px;font:600 12px 'DM Sans',sans-serif;cursor:pointer;transition:background .15s,transform .15s}
+.cancel-modal{border:1px solid #4a4d55;background:transparent;color:#dbdee1}
+.cancel-modal:hover{background:#393b42}
+.create-modal{border:0;background:#5865f2;color:#fff;box-shadow:0 5px 14px #5865f233}
+.create-modal:hover:not(:disabled){background:#4752c4;transform:translateY(-1px)}
+.create-modal:disabled{opacity:.45;cursor:not-allowed}
+@keyframes modalFade{from{opacity:0}to{opacity:1}}
+@keyframes modalRise{from{opacity:0;transform:translateY(9px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){.channel-modal{padding:24px 20px;border-radius:14px}.channel-modal h2{font-size:20px}}
