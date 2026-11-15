@@ -93,7 +93,7 @@ export default function App() {
     const name = window.prompt("Название нового сервера:");
     if (!name?.trim()) return;
     const id = Math.max(0, ...servers.map((server) => server.id)) + 1;
-    const visibility = window.confirm("Сделать сервер публичным?\n\nОК — публичный, Отмена — приватный.") ? "public" : "private";
+    const visibility: Server["visibility"] = window.confirm("Сделать сервер публичным?\n\nОК — публичный, Отмена — приватный.") ? "public" : "private";
     const server = { id, name: name.trim(), letter: name.trim().charAt(0).toUpperCase(), visibility };
     setServers((current) => [...current, server]);
     const channelId = Math.max(0, ...channels.map((channel) => channel.id)) + 1;
