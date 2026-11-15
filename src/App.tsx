@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server } from "lucide-react";
 
-type Server = { id: number; name: string; letter: string };
+type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
 type Channel = { id: number; serverId: number; name: string; message: string; time: string; initials: string; color: string; unread?: number };
 
 const starterServers: Server[] = [{ id: 1, name: "BrainGram", letter: "B" }];
@@ -93,13 +93,17 @@ export default function App() {
     const name = window.prompt("Название нового сервера:");
     if (!name?.trim()) return;
     const id = Math.max(0, ...servers.map((server) => server.id)) + 1;
-    const server = { id, name: name.trim(), letter: name.trim().charAt(0).toUpperCase() };
+    const visibility = window.confirm("Сделать сервер публичным?\n\nОК — публичный, Отмена — приватный.") ? "public" : "private";
+    const server = { id, name: name.trim(), letter: name.trim().charAt(0).toUpperCase(), visibility };
     setServers((current) => [...current, server]);
     const channelId = Math.max(0, ...channels.map((channel) => channel.id)) + 1;
     setChannels((current) => [...current, { id: channelId, serverId: id, name: "общий", message: "Канал создан", time: "Сейчас", initials: "О", color: "violet" }]);
     setMessages((current) => ({ ...current, [channelId]: ["Добро пожаловать на новый сервер! 👋"] }));
     setActiveServerId(id);
     setActiveId(channelId);
+  }
+  function toggleServerVisibility(serverId: number) {
+    setServers((current) => current.map((server) => server.id === serverId ? { ...server, visibility: server.visibility === "private" ? "public" : "private" } : server));
   }
   function createChannel() {
     setNewChannelName("");
@@ -162,7 +166,20 @@ export default function App() {
         <div className="user-panel"><div className="user-avatar">U<i/></div><div className="user-meta"><strong>Пользователь</strong><small>В сети</small></div><button title="Микрофон"><Mic size={18}/></button><button title="Настройки"><Settings size={18}/></button></div>
       </aside>
 
-      {activeTab === "friends" ? <section className="friends-panel">
+      {activeTab === "servers" ? <section className="servers-panel">
+        <div className="servers-topbar"><div><Server size={20}/><strong>Серверы</strong></div><span>{servers.length} серверов</span></div>
+        <div className="servers-content">
+          <div className="servers-hero"><div><h1>Твои сообщества</h1><p>Создавай места для общения или присоединяйся к другим</p></div><div className="servers-hero-icon"><Server size={27}/></div></div>
+          <div className="servers-actions"><div><strong>Публичные и приватные серверы</strong><span>Публичные доступны всем, приватные — только по приглашению</span></div><button onClick={createServer}><Plus size={17}/> Создать сервер</button></div>
+          <div className="servers-section-title">МОИ СЕРВЕРЫ</div>
+          <div className="servers-grid">{servers.map((server) => <article className="my-server-card" key={server.id}>
+            <div className="my-server-banner"><div className="my-server-avatar">{server.letter}</div><span className={server.visibility === "private" ? "server-privacy private" : "server-privacy public"}>{server.visibility === "private" ? "🔒 Приватный" : "🌐 Публичный"}</span></div>
+            <div className="my-server-info"><strong>{server.name}</strong><span>{channels.filter((channel) => channel.serverId === server.id).length} канал(ов) · локальный сервер</span></div>
+            <div className="my-server-actions"><button onClick={() => { selectServer(server); setActiveTab("chats"); }}>Открыть сервер</button><button title="Изменить доступ" onClick={() => toggleServerVisibility(server.id)}>{server.visibility === "private" ? "Сделать публичным" : "Сделать приватным"}</button></div>
+          </article>)}</div>
+          <p className="servers-note">Пока серверы хранятся только на этом устройстве. Публичный и приватный режимы сейчас показывают выбранный тип доступа; приглашения и поиск серверов подключим вместе с backend.</p>
+        </div>
+      </section> : activeTab === "friends" ? <section className="friends-panel">
         <div className="friends-topbar"><div><Users size={20}/><strong>Друзья</strong></div><span>{friends.length} друзей</span></div>
         <div className="friends-content">
           <div className="friends-hero"><div><h1>Твои друзья</h1><p>Общайся и оставайся на связи в BrainGram</p></div><div className="friends-hero-icon"><Users size={27}/></div></div>
