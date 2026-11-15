@@ -17,11 +17,27 @@ create policy "Users can create their own profile" on public.profiles
 create policy "Users can update their own profile" on public.profiles
   for update to authenticated using (auth.uid() = id) with check (auth.uid() = id);
 
+-- Usernames are unique regardless of letter case.
+create unique index if not exists profiles_username_lower_unique
+  on public.profiles (lower(username))
+  where username is not null;
+
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
+declare
+  new_username text;
 begin
-  insert into public.profiles (id, display_name)
-  values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', split_part(new.email, '@', 1)));
+  new_username := lower(new.raw_user_meta_data ->> 'username');
+  if new_username is null or new_username !~ '^[a-z0-9_]{3,20}$' then
+    raise exception 'A valid unique username is required';
+  end if;
+
+  insert into public.profiles (id, username, display_name)
+  values (
+    new.id,
+    new_username,
+    coalesce(new.raw_user_meta_data ->> 'display_name', new_username)
+  );
   return new;
 end;
 $$;
