@@ -29,6 +29,7 @@ function AppContent() {
   const [profileStatus, setProfileStatus] = useState(() => localStorage.getItem("bg-profile-status") || "В сети");
   const [profileAbout, setProfileAbout] = useState(() => localStorage.getItem("bg-profile-about") || "Привет! Я пользуюсь BrainGram 👋");
   const [profileSaved, setProfileSaved] = useState(false);
+  const [showProfileEditor, setShowProfileEditor] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [friendSearch, setFriendSearch] = useState("");
   const [friendInvite, setFriendInvite] = useState("");
@@ -192,24 +193,31 @@ function AppContent() {
             {notifications.length === 0 && <div className="notifications-empty"><Bell size={32}/><strong>Пока тихо</strong><p>Когда появятся новые события, они будут здесь.</p></div>}
           </div>
         </div>
-      </section> : activeTab === "profile" ? <section className="profile-panel">
-        <div className="profile-topbar"><UserRound size={20}/><strong>Мой профиль</strong><button className="profile-settings-button" type="button" onClick={() => setShowSettings(true)} aria-label="Открыть настройки" title="Настройки"><Settings size={17}/><span>Настройки</span></button></div>
-        <div className="profile-cover"><div className="profile-avatar-large">{(profileName.trim()[0] || "U").toUpperCase()}<span className="profile-online-dot"/></div></div>
-        <div className="profile-card">
-          <div className="profile-card-heading"><div><h1>{profileName || "Пользователь"}</h1><p>@{profileTag || "user"}</p></div><span className="profile-status-pill"><i/>{profileStatus}</span></div>
-          <div className="profile-divider"/>
-          <h2>О СЕБЕ</h2><p className="profile-about-preview">{profileAbout || "Расскажи немного о себе..."}</p>
-          <div className="profile-divider"/>
-          <h2>РЕДАКТИРОВАТЬ ПРОФИЛЬ</h2>
-          <form className="profile-form" onSubmit={(event) => { event.preventDefault(); localStorage.setItem("bg-profile-name",profileName.trim() || "Пользователь"); localStorage.setItem("bg-profile-tag",profileTag.trim().replace(/^@/,"") || "user"); localStorage.setItem("bg-profile-status",profileStatus); localStorage.setItem("bg-profile-about",profileAbout.trim()); setProfileSaved(true); window.setTimeout(() => setProfileSaved(false),2200); }}>
-            <label htmlFor="profile-name">ИМЯ</label><input id="profile-name" maxLength={32} value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="Как тебя называть?"/>
-            <label htmlFor="profile-tag">ИМЯ ПОЛЬЗОВАТЕЛЯ</label><div className="profile-tag-input"><span>@</span><input id="profile-tag" maxLength={24} value={profileTag} onChange={(event) => setProfileTag(event.target.value.replace(/\s/g,""))} placeholder="username"/></div>
-            <label htmlFor="profile-status">СТАТУС</label><select id="profile-status" value={profileStatus} onChange={(event) => setProfileStatus(event.target.value)}><option>В сети</option><option>Не беспокоить</option><option>Не активен</option><option>Невидимый</option></select>
-            <label htmlFor="profile-about">О СЕБЕ</label><textarea id="profile-about" rows={3} maxLength={160} value={profileAbout} onChange={(event) => setProfileAbout(event.target.value)} placeholder="Напиши пару слов о себе..."/>
-            <div className="profile-form-footer"><small>{profileAbout.length}/160</small><button type="submit">{profileSaved ? "Сохранено ✓" : "Сохранить изменения"}</button></div>
-          </form>
-        </div>
-      </section> : <section className="chat-panel">
+      </section> : activeTab === "profile" ? <section className="profile-panel profile-showcase">
+         <div className="profile-topbar"><button type="button" className="profile-back" onClick={() => setActiveTab("chats")}>‹</button><strong>Профиль</strong><button className="profile-search" type="button" aria-label="Поиск"><Search size={21}/></button></div>
+         <div className="profile-hero">
+           <div className="profile-cover"><div className="profile-avatar-large">{(profileName.trim()[0] || "U").toUpperCase()}<span className="profile-online-dot"/></div></div>
+           <div className="profile-hero-content"><button className="profile-edit-button" type="button" onClick={() => setShowProfileEditor((value) => !value)}><Settings size={16}/> {showProfileEditor ? "Закрыть" : "Редактировать профиль"}</button>
+             <h1>{profileName || "Пользователь"}</h1><div className="profile-online-label"><i/>{profileStatus}</div><p className="profile-hero-tag">@{profileTag || "user"}</p>{profileAbout && <p className="profile-hero-about">{profileAbout}</p>}
+           </div>
+         </div>
+         <div className="profile-feature-grid">
+           <button type="button" className="profile-feature-card" onClick={() => setShowProfileEditor(true)}><span className="feature-icon feature-blue"><Inbox size={25}/></span><strong>Сохранённое</strong><small>Твои заметки и файлы</small></button>
+           <button type="button" className="profile-feature-card" onClick={() => setActiveTab("chats")}><span className="feature-icon feature-green"><MessageCircle size={25}/></span><strong>Сообщения</strong><small>Твои чаты</small></button>
+           <button type="button" className="profile-feature-card" onClick={() => setActiveTab("friends")}><span className="feature-icon feature-purple"><Users size={25}/></span><strong>Контакты</strong><small>{friends.length} друзей</small></button>
+           <button type="button" className="profile-feature-card" onClick={() => setShowSettings(true)}><span className="feature-icon feature-orange"><Settings size={25}/></span><strong>Настройки</strong><small>Аккаунт и приложение</small></button>
+         </div>
+         {showProfileEditor && <div className="profile-card profile-edit-card">
+           <h2>РЕДАКТИРОВАТЬ ПРОФИЛЬ</h2>
+           <form className="profile-form" onSubmit={(event) => { event.preventDefault(); localStorage.setItem("bg-profile-name",profileName.trim() || "Пользователь"); localStorage.setItem("bg-profile-tag",profileTag.trim().replace(/^@/,"") || "user"); localStorage.setItem("bg-profile-status",profileStatus); localStorage.setItem("bg-profile-about",profileAbout.trim()); setProfileSaved(true); window.setTimeout(() => setProfileSaved(false),2200); }}>
+             <label htmlFor="profile-name">ИМЯ</label><input id="profile-name" maxLength={32} value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="Как тебя называть?"/>
+             <label htmlFor="profile-tag">ИМЯ ПОЛЬЗОВАТЕЛЯ</label><div className="profile-tag-input"><span>@</span><input id="profile-tag" maxLength={24} value={profileTag} onChange={(event) => setProfileTag(event.target.value.replace(/\s/g,""))} placeholder="username"/></div>
+             <label htmlFor="profile-status">СТАТУС</label><select id="profile-status" value={profileStatus} onChange={(event) => setProfileStatus(event.target.value)}><option>В сети</option><option>Не беспокоить</option><option>Не активен</option><option>Невидимый</option></select>
+             <label htmlFor="profile-about">О СЕБЕ</label><textarea id="profile-about" rows={3} maxLength={160} value={profileAbout} onChange={(event) => setProfileAbout(event.target.value)} placeholder="Напиши пару слов о себе..."/>
+             <div className="profile-form-footer"><small>{profileAbout.length}/160</small><button type="submit">{profileSaved ? "Сохранено ✓" : "Сохранить изменения"}</button></div>
+           </form>
+         </div>}
+       </section> : <section className="chat-panel">
         <header className="chat-header"><div className="header-channel"><Hash size={23}/><strong>{active.name}</strong></div><div className="header-tools"><button title="Уведомления"><Bell/></button><button title="Закреплённое"><Pin/></button><button title="Участники"><Users/></button><div className="header-search"><Search size={16}/><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Поиск каналов"/></div><button title="Входящие"><Inbox/></button><button title="Справка"><MessageCircle/></button></div></header>
         <div className="chat-content">
           <div className="channel-welcome"><div className="hash-welcome"><Hash size={34}/></div><h1>Добро пожаловать в #{active.name}!</h1><p>Это начало канала #{active.name}.</p></div>
@@ -218,7 +226,7 @@ function AppContent() {
         <form className="message-composer" onSubmit={(e) => { e.preventDefault(); sendMessage(); }}><button type="button" title="Прикрепить файл"><Plus size={21}/></button><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Написать в #${active.name}`}/><button type="button" title="Прикрепить файл"><Paperclip size={19}/></button><button type="button" title="Эмодзи"><Smile size={20}/></button><button className="send-message" type="submit" title="Отправить"><Send size={18}/></button></form>
       </section>}
       <aside className="member-sidebar"><div className="member-title">УЧАСТНИКИ — 1</div><div className="member-group">В СЕТИ — 1</div><div className="member"><div className="member-avatar purple">U<i/></div><span>{profileName}</span><b>👑</b></div></aside>
-      <div className="bottom-nav user-name-bar" aria-label="Имя пользователя"><span>@{profileTag || "user"}</span></div>
+      <button type="button" className="bottom-nav user-name-bar" aria-label="Открыть профиль" onClick={() => setActiveTab("profile")}><span>@{profileTag || "user"}</span></button>
       {showSettings && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowSettings(false); }}><section className="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title"><button className="modal-close" type="button" aria-label="Закрыть" onClick={() => setShowSettings(false)}>×</button><div className="modal-icon"><Settings size={23}/></div><h2 id="settings-title">Настройки</h2><p className="modal-subtitle">Управление твоим профилем BrainGram</p><div className="settings-row"><div><strong>Имя пользователя</strong><span>@{profileTag || "user"}</span></div><UserRound size={18}/></div><div className="settings-row"><div><strong>Статус</strong><span>{profileStatus}</span></div><span className="settings-status-dot"/></div><div className="settings-info"><strong>Приватность и безопасность</strong><p>Дополнительные настройки приватности, входа и защиты аккаунта появятся после подключения backend.</p></div><div className="modal-actions"><button type="button" className="create-modal" onClick={() => setShowSettings(false)}>Готово</button></div></section></div>}
       {showChannelModal && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowChannelModal(false); }}>
         <section className="channel-modal" role="dialog" aria-modal="true" aria-labelledby="channel-modal-title">
