@@ -23,6 +23,9 @@ export default function App() {
   const [activeId, setActiveId] = useState(1);
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
+  const [showChannelModal, setShowChannelModal] = useState(false);
+  const [newChannelName, setNewChannelName] = useState("");
+  const [newChannelDescription, setNewChannelDescription] = useState("");
   const [messages, setMessages] = useState<Record<number, string[]>>({
     1: ["Добро пожаловать на сервер BrainGram! 👋", "Здесь будет наше главное общение.", "Рассказывайте, как проходит день!"],
     2: ["Работа над BrainGram начинается здесь.", "Мария: дизайн уже готов ✨"],
@@ -57,12 +60,19 @@ export default function App() {
     setActiveId(channelId);
   }
   function createChannel() {
-    const name = window.prompt("Название текстового канала:");
-    if (!name?.trim() || !activeServer) return;
+    setNewChannelName("");
+    setNewChannelDescription("");
+    setShowChannelModal(true);
+  }
+  function submitNewChannel(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const name = newChannelName.trim().replace(/^#+/, "").replace(/\\s+/g, "-").toLowerCase();
+    if (!name || !activeServer) return;
     const id = Math.max(0, ...channels.map((channel) => channel.id)) + 1;
-    setChannels((current) => [...current, { id, serverId: activeServer.id, name: name.trim().replace(/^#+/, "").replace(/\s+/g, "-"), message: "Канал создан", time: "Сейчас", initials: "Н", color: "violet" }]);
-    setMessages((current) => ({ ...current, [id]: ["Это начало нового канала. 👋"] }));
+    setChannels((current) => [...current, { id, serverId: activeServer.id, name, message: "Канал создан", time: "Сейчас", initials: "Н", color: "violet" }]);
+    setMessages((current) => ({ ...current, [id]: [newChannelDescription.trim() || "Это начало нового канала. 👋"] }));
     setActiveId(id);
+    setShowChannelModal(false);
   }
   function deleteChannel(channel: Channel) {
     if (!window.confirm(`Удалить канал #${channel.name}?`)) return;
@@ -119,6 +129,22 @@ export default function App() {
         <form className="message-composer" onSubmit={(e) => { e.preventDefault(); sendMessage(); }}><button type="button" title="Прикрепить файл"><Plus size={21}/></button><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Написать в #${active.name}`}/><button type="button" title="Прикрепить файл"><Paperclip size={19}/></button><button type="button" title="Эмодзи"><Smile size={20}/></button><button className="send-message" type="submit" title="Отправить"><Send size={18}/></button></form>
       </section>
       <aside className="member-sidebar"><div className="member-title">УЧАСТНИКИ — 3</div><div className="member-group">В СЕТИ — 3</div><div className="member"><div className="member-avatar purple">U<i/></div><span>Пользователь</span><b>👑</b></div><div className="member"><div className="member-avatar blue">M<i/></div><span>Мария</span></div><div className="member"><div className="member-avatar green">D<i/></div><span>Денис</span></div></aside>
+      {showChannelModal && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowChannelModal(false); }}>
+        <section className="channel-modal" role="dialog" aria-modal="true" aria-labelledby="channel-modal-title">
+          <button className="modal-close" type="button" aria-label="Закрыть" onClick={() => setShowChannelModal(false)}>×</button>
+          <div className="modal-icon"><Hash size={24}/></div>
+          <h2 id="channel-modal-title">Создать канал</h2>
+          <p className="modal-subtitle">Канал появится на сервере <strong>{activeServer.name}</strong>.</p>
+          <form onSubmit={submitNewChannel}>
+            <label htmlFor="new-channel-name">НАЗВАНИЕ КАНАЛА</label>
+            <div className="channel-name-input"><Hash size={19}/><input id="new-channel-name" autoFocus maxLength={40} value={newChannelName} onChange={(event) => setNewChannelName(event.target.value)} placeholder="например, обсуждение" required /></div>
+            <label htmlFor="new-channel-description">ТЕМА КАНАЛА <span>НЕОБЯЗАТЕЛЬНО</span></label>
+            <textarea id="new-channel-description" rows={3} maxLength={120} value={newChannelDescription} onChange={(event) => setNewChannelDescription(event.target.value)} placeholder="О чём будем говорить?"/>
+            <div className="modal-hint"><Hash size={14}/> Текстовый канал · Видят участники сервера</div>
+            <div className="modal-actions"><button type="button" className="cancel-modal" onClick={() => setShowChannelModal(false)}>Отмена</button><button type="submit" className="create-modal" disabled={!newChannelName.trim()}>Создать канал</button></div>
+          </form>
+        </section>
+      </div>}
     </main>
   );
 }
