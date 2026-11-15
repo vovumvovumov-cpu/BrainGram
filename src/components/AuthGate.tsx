@@ -67,7 +67,7 @@ export default function AuthGate({ children }: Props) {
     {!supabaseConfigured ? <div className="auth-alert">Supabase пока не настроен для публикации. Нужно добавить два GitHub Actions secret: VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY.</div> : <form onSubmit={submit}>
       {mode === "signup" && <>
         <label>ИМЯ<input value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Как тебя называть?" maxLength={32}/></label>
-        <label>УНИКАЛЬНЫЙ ЮЗЕРНЕЙМ<input value={username} onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))} placeholder="например, brain_user" minLength={3} maxLength={20} autoComplete="username" required/><small className="auth-foot">3–20 символов: латинские буквы, цифры и _. Если имя занято, выбери другое.</small></label>
+        <label>ТВОЙ ЮЗЕРНЕЙМ<input value={username ? `@${username}` : ""} onChange={e => setUsername(e.target.value.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, ""))} placeholder="@king" minLength={4} maxLength={21} autoComplete="username" required/><small className="auth-foot">Например, @king. Юзернейм должен быть уникальным — один на одного пользователя.</small></label>
       </>}
       <label>ЭЛЕКТРОННАЯ ПОЧТА<input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com"/></label>
       <label>ПАРОЛЬ<input type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} minLength={6} required value={password} onChange={e => setPassword(e.target.value)} placeholder="Минимум 6 символов"/></label>
