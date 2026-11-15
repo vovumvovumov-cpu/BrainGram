@@ -28,6 +28,32 @@ export default function App() {
   const [profileStatus, setProfileStatus] = useState(() => localStorage.getItem("bg-profile-status") || "В сети");
   const [profileAbout, setProfileAbout] = useState(() => localStorage.getItem("bg-profile-about") || "Привет! Я пользуюсь BrainGram 👋");
   const [profileSaved, setProfileSaved] = useState(false);
+  const [friendSearch, setFriendSearch] = useState("");
+  const [friendInvite, setFriendInvite] = useState("");
+  const [friendMessage, setFriendMessage] = useState("");
+  const [friendRequests, setFriendRequests] = useState([
+    { id: 1, name: "Александр", tag: "@alex_dev", initials: "А", color: "purple", mutual: "2 общих сервера" },
+    { id: 2, name: "София", tag: "@sofia_art", initials: "С", color: "pink", mutual: "1 общий сервер" },
+  ]);
+  const [friends, setFriends] = useState([
+    { id: 3, name: "Мария", tag: "@maria", initials: "М", color: "blue", status: "В сети" },
+    { id: 4, name: "Денис", tag: "@denis", initials: "Д", color: "green", status: "Не активен" },
+  ]);
+  function acceptFriend(id: number) {
+    const request = friendRequests.find((item) => item.id === id);
+    if (!request) return;
+    setFriends((current) => [...current, { id: request.id, name: request.name, tag: request.tag, initials: request.initials, color: request.color, status: "В сети" }]);
+    setFriendRequests((current) => current.filter((item) => item.id !== id));
+  }
+  function sendFriendInvite(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const tag = friendInvite.trim().replace(/^@/, "");
+    if (!tag) return;
+    if (friends.some((friend) => friend.tag.toLowerCase() === `@${tag.toLowerCase()}`)) { setFriendMessage("Этот пользователь уже в друзьях."); return; }
+    if (friendRequests.some((request) => request.tag.toLowerCase() === `@${tag.toLowerCase()}`)) { setFriendMessage("Заявка от этого пользователя уже есть."); return; }
+    setFriendMessage(`Демо: заявка для @${tag} подготовлена. Отправка заработает после подключения сервера.`);
+    setFriendInvite("");
+  }
   const [notifications, setNotifications] = useState([
     { id: 1, type: "message", title: "Новое сообщение", text: "Мария написала в канале #общий", time: "2 минуты назад", unread: true, initials: "М", color: "blue" },
     { id: 2, type: "mention", title: "Тебя упомянули", text: "Денис отметил тебя в #разработка", time: "18 минут назад", unread: true, initials: "Д", color: "green" },
@@ -136,7 +162,19 @@ export default function App() {
         <div className="user-panel"><div className="user-avatar">U<i/></div><div className="user-meta"><strong>Пользователь</strong><small>В сети</small></div><button title="Микрофон"><Mic size={18}/></button><button title="Настройки"><Settings size={18}/></button></div>
       </aside>
 
-      {activeTab === "notifications" ? <section className="notifications-panel">
+      {activeTab === "friends" ? <section className="friends-panel">
+        <div className="friends-topbar"><div><Users size={20}/><strong>Друзья</strong></div><span>{friends.length} друзей</span></div>
+        <div className="friends-content">
+          <div className="friends-hero"><div><h1>Твои друзья</h1><p>Общайся и оставайся на связи в BrainGram</p></div><div className="friends-hero-icon"><Users size={27}/></div></div>
+          <form className="friend-add-form" onSubmit={sendFriendInvite}><div className="friend-add-copy"><strong>Добавить друга</strong><span>Введи его имя пользователя</span></div><div className="friend-add-controls"><div><span>@</span><input value={friendInvite} onChange={(event) => { setFriendInvite(event.target.value); setFriendMessage(""); }} placeholder="username" maxLength={24}/></div><button type="submit" disabled={!friendInvite.trim()}><Plus size={16}/> Добавить</button></div>{friendMessage && <p className="friend-feedback">{friendMessage}</p>}</form>
+          <div className="friend-section-heading"><div><h2>Заявки в друзья</h2><span>{friendRequests.length}</span></div></div>
+          {friendRequests.length > 0 ? <div className="friend-request-list">{friendRequests.map((friend) => <article className="friend-card request-card" key={friend.id}><div className={`friend-avatar ${friend.color}`}>{friend.initials}</div><div className="friend-details"><strong>{friend.name}</strong><span>{friend.tag} · {friend.mutual}</span></div><div className="friend-card-actions"><button className="friend-accept" onClick={() => acceptFriend(friend.id)} title="Принять заявку"><Users size={15}/></button><button className="friend-decline" onClick={() => setFriendRequests((current) => current.filter((item) => item.id !== friend.id))} title="Отклонить заявку">×</button></div></article>)}</div> : <div className="friends-empty-small">Новых заявок пока нет.</div>}
+          <div className="friend-section-heading friends-list-heading"><div><h2>Все друзья</h2><span>{friends.length}</span></div><div className="friend-search"><Search size={15}/><input value={friendSearch} onChange={(event) => setFriendSearch(event.target.value)} placeholder="Поиск друзей"/></div></div>
+          <div className="friend-list">{friends.filter((friend) => `${friend.name} ${friend.tag}`.toLowerCase().includes(friendSearch.toLowerCase())).map((friend) => <article className="friend-card" key={friend.id}><div className={`friend-avatar ${friend.color}`}>{friend.initials}<i className={friend.status === "В сети" ? "online" : "idle"}/></div><div className="friend-details"><strong>{friend.name}</strong><span>{friend.tag} · {friend.status}</span></div><button className="friend-more" title="Удалить из друзей" onClick={() => setFriends((current) => current.filter((item) => item.id !== friend.id))}><MoreHorizontal size={20}/></button></article>)}
+          {friends.filter((friend) => `${friend.name} ${friend.tag}`.toLowerCase().includes(friendSearch.toLowerCase())).length === 0 && <div className="friends-empty-small">Друзья не найдены.</div>}
+          </div>
+        </div>
+      </section> : activeTab === "notifications" ? <section className="notifications-panel">
         <div className="notifications-topbar"><div><Bell size={20}/><strong>Уведомления</strong>{unreadNotifications > 0 && <span className="notification-count">{unreadNotifications}</span>}</div><button onClick={markAllNotificationsRead} disabled={unreadNotifications === 0}><Inbox size={16}/> Прочитать все</button></div>
         <div className="notifications-content">
           <div className="notifications-heading"><div><h1>Входящие</h1><p>Здесь собраны важные события BrainGram</p></div><span>{notifications.length} всего</span></div>
