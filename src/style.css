@@ -218,3 +218,28 @@ button{font:inherit;cursor:pointer}
 .friends-list-heading{margin-top:26px}.friend-search{height:30px;width:160px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:7px;background:#232428;color:#949ba4}.friend-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#f2f3f5;font:10px 'DM Sans',sans-serif}
 .friend-more{width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:#949ba4}.friend-more:hover{background:#41434b;color:#fff}
 @media(max-width:650px){.friends-panel{grid-column:2;grid-row:1;width:100%;height:100%;min-height:0}.friends-topbar{height:49px;min-height:49px;padding:0 12px}.friends-content{padding:24px 12px 28px}.friends-hero h1{font-size:21px}.friends-hero-icon{width:45px;height:45px}.friend-add-form{padding:13px}.friend-add-controls{gap:6px}.friend-add-controls>button{padding:0 9px;font-size:10px}.friend-search{width:125px}}
+
+
+/* Servers overview */
+.servers-panel{grid-column:3;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto;background:#313338}
+.servers-topbar{height:56px;min-height:56px;padding:0 22px;border-bottom:1px solid #26272b;display:flex;align-items:center;justify-content:space-between;color:#b5bac1}
+.servers-topbar>div{display:flex;align-items:center;gap:10px}.servers-topbar strong{font-size:15px;color:#f2f3f5}.servers-topbar>span{font-size:11px;color:#949ba4}
+.servers-content{width:min(820px,100%);margin:0 auto;padding:30px 26px 42px}
+.servers-hero{display:flex;align-items:center;justify-content:space-between;margin-bottom:23px}
+.servers-hero h1{font-size:24px;letter-spacing:-.5px;margin:0 0 5px;color:#f2f3f5}.servers-hero p{font-size:12px;line-height:1.5;color:#949ba4;margin:0}
+.servers-hero-icon{width:54px;height:54px;border-radius:17px;background:#5865f222;color:#9da8ff;display:grid;place-items:center}
+.servers-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:17px;border:1px solid #41434b;border-radius:11px;background:#2b2d31;margin-bottom:26px}
+.servers-actions>div{display:flex;flex-direction:column;gap:5px}.servers-actions strong{font-size:13px;color:#f2f3f5}.servers-actions span{font-size:11px;line-height:1.5;color:#949ba4}
+.servers-actions>button{height:39px;flex:none;padding:0 13px;border:0;border-radius:8px;background:#5865f2;color:white;display:flex;align-items:center;gap:7px;font:600 11px 'DM Sans',sans-serif;cursor:pointer}.servers-actions>button:hover{background:#4752c4}
+.servers-section-title{font-size:10px;font-weight:800;letter-spacing:.65px;color:#b5bac1;margin-bottom:11px}
+.servers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:12px}
+.my-server-card{overflow:hidden;border:1px solid #41434b;border-radius:11px;background:#2b2d31}
+.my-server-banner{height:82px;padding:12px 13px;background:linear-gradient(115deg,#343b70,#5865f2 60%,#7956a5);display:flex;align-items:flex-start;justify-content:space-between}
+.my-server-avatar{width:52px;height:52px;border:3px solid #2b2d31;border-radius:16px;background:#292b39;color:white;display:grid;place-items:center;font-size:22px;font-weight:800}
+.server-privacy{padding:5px 8px;border-radius:20px;background:#17181dcc;color:#e4e6eb;font-size:9px;font-weight:700}
+.my-server-info{display:flex;flex-direction:column;gap:5px;padding:14px 14px 10px}.my-server-info strong{font-size:14px;color:#f2f3f5}.my-server-info span{font-size:10px;color:#949ba4}
+.my-server-actions{display:flex;gap:7px;padding:0 14px 14px}.my-server-actions button{min-height:32px;padding:0 9px;border-radius:7px;font:600 10px 'DM Sans',sans-serif;cursor:pointer}
+.my-server-actions button:first-child{flex:1;border:0;background:#5865f2;color:white}.my-server-actions button:first-child:hover{background:#4752c4}
+.my-server-actions button:last-child{border:1px solid #4a4d55;background:transparent;color:#c3c6cc}.my-server-actions button:last-child:hover{background:#393b42}
+.servers-note{margin:18px 0 0;color:#858b95;font-size:10px;line-height:1.6}
+@media(max-width:650px){.servers-panel{grid-column:2;grid-row:1;width:100%;height:100%;min-height:0}.servers-topbar{height:49px;min-height:49px;padding:0 12px}.servers-content{padding:24px 12px 28px}.servers-hero h1{font-size:21px}.servers-hero-icon{width:45px;height:45px}.servers-actions{align-items:flex-start;flex-direction:column;padding:13px}.servers-actions>button{width:100%;justify-content:center}.servers-grid{grid-template-columns:1fr}.my-server-actions button{font-size:9px;padding:0 7px}}
