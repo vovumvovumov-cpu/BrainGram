@@ -144,3 +144,46 @@ button{font:inherit;cursor:pointer}
 .profile-form-footer button{border:0;border-radius:8px;background:#5865f2;color:white;padding:11px 16px;font:600 12px 'DM Sans',sans-serif;cursor:pointer}
 .profile-form-footer button:hover{background:#4752c4}
 @media(max-width:650px){.profile-panel{grid-column:2;grid-row:1;width:100%;height:100%;min-height:0}.profile-cover{height:120px;min-height:120px;margin-bottom:53px}.profile-avatar-large{left:17px;width:84px;height:84px;font-size:34px}.profile-card{padding:0 16px 28px}.profile-card-heading h1{font-size:20px}.profile-topbar{padding:0 12px}}
+
+
+/* Notifications inbox */
+.notifications-panel{grid-column:3;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto;background:#313338}
+.notifications-topbar{height:56px;min-height:56px;padding:0 22px;border-bottom:1px solid #26272b;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.notifications-topbar>div{display:flex;align-items:center;gap:10px;color:#b5bac1}
+.notifications-topbar strong{font-size:15px;color:#f2f3f5}
+.notification-count{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#5865f2;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}
+.notifications-topbar>button{height:33px;padding:0 10px;border:1px solid #41434b;border-radius:7px;background:#2b2d31;color:#c6cad0;display:flex;align-items:center;gap:7px;font:600 11px 'DM Sans',sans-serif}
+.notifications-topbar>button:hover:not(:disabled){background:#393b42;color:#fff}
+.notifications-topbar>button:disabled{opacity:.4;cursor:default}
+.notifications-content{width:min(760px,100%);margin:0 auto;padding:30px 26px 42px}
+.notifications-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:20px}
+.notifications-heading h1{font-size:24px;letter-spacing:-.5px;margin:0 0 5px;color:#f2f3f5}
+.notifications-heading p{margin:0;color:#949ba4;font-size:12px}
+.notifications-heading>span{color:#949ba4;font-size:11px;padding-bottom:3px}
+.notification-list{display:flex;flex-direction:column;gap:9px}
+.notification-card{position:relative;display:flex;align-items:flex-start;gap:13px;padding:15px 42px 15px 15px;border:1px solid #41434b;border-radius:11px;background:#2b2d31;transition:background .15s,border-color .15s}
+.notification-card:hover{background:#303238;border-color:#50535d}
+.notification-card.unread-notification{background:linear-gradient(100deg,#5865f20e,#2b2d31 45%);border-color:#5865f24a}
+.notification-avatar{width:42px;height:42px;flex:none;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:15px;font-weight:800}
+.notification-avatar.blue{background:linear-gradient(145deg,#559bd2,#35618c)}
+.notification-avatar.green{background:linear-gradient(145deg,#4ba886,#286c57)}
+.notification-avatar.purple{background:linear-gradient(145deg,#8b70dc,#5840a3)}
+.notification-avatar.pink{background:linear-gradient(145deg,#d878ad,#914b83)}
+.notification-copy{min-width:0;flex:1}
+.notification-title-row{display:flex;align-items:center;gap:8px}
+.notification-title-row strong{font-size:13px;color:#f2f3f5}
+.notification-title-row i{width:7px;height:7px;border-radius:50%;background:#8795ff;flex:none}
+.notification-copy>p{font-size:12px;line-height:1.5;color:#c3c6cc;margin:5px 0 6px;overflow-wrap:anywhere}
+.notification-copy time{font-size:10px;color:#858b95}
+.notification-dismiss{position:absolute;right:10px;top:10px;width:26px;height:26px;border:0;border-radius:6px;background:transparent;color:#858b95;font-size:20px;line-height:1}
+.notification-dismiss:hover{background:#41434b;color:#fff}
+.notification-actions{display:flex;gap:8px;margin-top:11px}
+.notification-actions button{height:30px;padding:0 12px;border-radius:7px;font:600 11px 'DM Sans',sans-serif}
+.notification-actions button:first-child{border:0;background:#5865f2;color:#fff}
+.notification-actions button:first-child:hover{background:#4752c4}
+.notification-actions button:last-child{border:1px solid #4a4d55;background:transparent;color:#c3c6cc}
+.notification-actions button:last-child:hover{background:#393b42}
+.notifications-empty{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#858b95;gap:9px}
+.notifications-empty strong{font-size:15px;color:#dbdee1}
+.notifications-empty p{font-size:12px;margin:0}
+@media(max-width:650px){.notifications-panel{grid-column:2;grid-row:1;width:100%;height:100%;min-height:0}.notifications-topbar{height:49px;min-height:49px;padding:0 11px}.notifications-topbar>button{font-size:10px;padding:0 8px}.notifications-content{padding:24px 12px 28px}.notifications-heading h1{font-size:21px}.notification-card{gap:10px;padding:12px 34px 12px 11px}.notification-avatar{width:38px;height:38px;border-radius:12px}.notification-copy>p{font-size:11px}}
