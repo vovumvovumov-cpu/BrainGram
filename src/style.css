@@ -380,3 +380,12 @@ button{font:inherit;cursor:pointer}
   .simple-profile-avatar{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#6878ff,#4534a5);border:4px solid #ffffff18;color:#fff;font-size:36px;font-weight:800}
   .simple-profile-card h1{margin:15px 0 0;color:#fff;font-size:22px;font-weight:800;text-align:center;overflow-wrap:anywhere}
 }
+
+
+/* Click the profile avatar to choose a photo; keep the card visually minimal */
+@media(max-width:650px){
+  .simple-profile-avatar{padding:0;border:4px solid #ffffff18;overflow:hidden;cursor:pointer}
+  .simple-profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .simple-profile-avatar:focus-visible{outline:3px solid #8795ff;outline-offset:3px}
+  .profile-avatar-input{display:none}
+}
