@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AuthGate from "./components/AuthGate";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server } from "lucide-react";
 
@@ -25,11 +25,50 @@ function AppContent() {
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [profileName, setProfileName] = useState(() => localStorage.getItem("bg-profile-name") || "Пользователь");
+  const [profileAvatar, setProfileAvatar] = useState(() => localStorage.getItem("bg-profile-avatar") || "");
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const [profileTag, setProfileTag] = useState(() => localStorage.getItem("bg-profile-tag") || "user");
   const [profileStatus, setProfileStatus] = useState(() => localStorage.getItem("bg-profile-status") || "В сети");
   const [profileAbout, setProfileAbout] = useState(() => localStorage.getItem("bg-profile-about") || "Привет! Я пользуюсь BrainGram 👋");
   const [profileSaved, setProfileSaved] = useState(false);
   const [showProfileEditor, setShowProfileEditor] = useState(false);
+  function handleProfileAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    input.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { window.alert("Выбери файл изображения."); return; }
+    if (file.size > 8 * 1024 * 1024) { window.alert("Изображение должно быть меньше 8 МБ."); return; }
+
+    const reader = new FileReader();
+    reader.onerror = () => window.alert("Не удалось прочитать изображение.");
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => window.alert("Не удалось открыть это изображение.");
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 512;
+        const context = canvas.getContext("2d");
+        if (!context) { window.alert("Не удалось обработать изображение."); return; }
+        const cropSize = Math.min(image.naturalWidth, image.naturalHeight);
+        const cropX = (image.naturalWidth - cropSize) / 2;
+        const cropY = (image.naturalHeight - cropSize) / 2;
+        context.fillStyle = "#28243a";
+        context.fillRect(0, 0, 512, 512);
+        context.drawImage(image, cropX, cropY, cropSize, cropSize, 0, 0, 512, 512);
+        const optimizedAvatar = canvas.toDataURL("image/jpeg", 0.84);
+        try {
+          localStorage.setItem("bg-profile-avatar", optimizedAvatar);
+          setProfileAvatar(optimizedAvatar);
+        } catch {
+          window.alert("Не удалось сохранить аватар. Попробуй изображение поменьше.");
+        }
+      };
+      image.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
   const [showSettings, setShowSettings] = useState(false);
   const [friendSearch, setFriendSearch] = useState("");
   const [friendInvite, setFriendInvite] = useState("");
@@ -195,7 +234,7 @@ function AppContent() {
         </div>
       </section> : activeTab === "profile" ? <section className="profile-panel profile-showcase">
          <div className="simple-profile-card">
-           <div className="simple-profile-avatar">{(profileName.trim()[0] || "U").toUpperCase()}</div>
+           <button type="button" className="simple-profile-avatar" onClick={() => avatarInputRef.current?.click()} aria-label="Изменить аватар" title="Изменить аватар">{profileAvatar ? <img src={profileAvatar} alt="Аватар профиля"/> : (profileName.trim()[0] || "U").toUpperCase()}</button><input ref={avatarInputRef} className="profile-avatar-input" type="file" accept="image/*" onChange={handleProfileAvatarChange} aria-label="Выбрать изображение аватара"/>
            <h1>{profileName || "Пользователь"}</h1>
          </div>
        </section> : <section className="chat-panel">
