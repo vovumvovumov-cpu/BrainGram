@@ -389,3 +389,13 @@ button{font:inherit;cursor:pointer}
   .simple-profile-avatar:focus-visible{outline:3px solid #8795ff;outline-offset:3px}
   .profile-avatar-input{display:none}
 }
+
+
+/* Reuse the current account avatar consistently in account/member badges */
+.user-avatar img,.member-avatar img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  border-radius:inherit;
+}
