@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import AuthGate from "./components/AuthGate";
+import { supabase } from "./lib/supabase";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
@@ -30,8 +31,92 @@ function AppContent() {
   const [profileTag, setProfileTag] = useState(() => localStorage.getItem("bg-profile-tag") || "user");
   const [profileStatus, setProfileStatus] = useState(() => localStorage.getItem("bg-profile-status") || "В сети");
   const [profileAbout, setProfileAbout] = useState(() => localStorage.getItem("bg-profile-about") || "Привет! Я пользуюсь BrainGram 👋");
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [showProfileEditor, setShowProfileEditor] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    async function loadAccountProfile() {
+      if (!supabase) return;
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name, username, status, about, avatar_url")
+        .eq("id", authData.user.id)
+        .maybeSingle();
+      if (error) {
+        console.error("Не удалось загрузить профиль BrainGram:", error.message);
+        return;
+      }
+      if (cancelled || !data) return;
+
+      const name = data.display_name || authData.user.user_metadata?.display_name || "Пользователь";
+      const username = data.username || "user";
+      const status = data.status || "В сети";
+      const about = typeof data.about === "string" ? data.about : "Привет! Я пользуюсь BrainGram 👋";
+      const avatarUrl = typeof data.avatar_url === "string" && data.avatar_url
+        ? `${data.avatar_url}?v=${Date.now()}`
+        : "";
+
+      setProfileName(name);
+      setProfileTag(username);
+      setProfileStatus(status);
+      setProfileAbout(about);
+      setProfileAvatar(avatarUrl);
+      localStorage.setItem("bg-profile-name", name);
+      localStorage.setItem("bg-profile-tag", username);
+      localStorage.setItem("bg-profile-status", status);
+      localStorage.setItem("bg-profile-about", about);
+      if (avatarUrl) localStorage.setItem("bg-profile-avatar", avatarUrl);
+      else localStorage.removeItem("bg-profile-avatar");
+    }
+
+    void loadAccountProfile();
+    return () => { cancelled = true; };
+  }, []);
+
+  async function persistProfileAvatar(optimizedAvatar: string) {
+    setAvatarUploading(true);
+    try {
+      if (!supabase) throw new Error("Supabase не настроен.");
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("Сессия пользователя не найдена.");
+
+      const imageResponse = await fetch(optimizedAvatar);
+      const imageBlob = await imageResponse.blob();
+      const objectPath = `${authData.user.id}/avatar.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(objectPath, imageBlob, {
+          cacheControl: "3600",
+          contentType: "image/jpeg",
+          upsert: true,
+        });
+      if (uploadError) throw uploadError;
+
+      const { data: publicData } = supabase.storage.from("avatars").getPublicUrl(objectPath);
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicData.publicUrl, updated_at: new Date().toISOString() })
+        .eq("id", authData.user.id);
+      if (profileError) throw profileError;
+
+      const avatarUrl = `${publicData.publicUrl}?v=${Date.now()}`;
+      localStorage.setItem("bg-profile-avatar", avatarUrl);
+      setProfileAvatar(avatarUrl);
+    } catch (error) {
+      try { localStorage.setItem("bg-profile-avatar", optimizedAvatar); } catch { /* Browser storage may be full. */ }
+      setProfileAvatar(optimizedAvatar);
+      console.error("Не удалось синхронизировать аватар BrainGram:", error);
+      window.alert("Аватар сохранён на этом устройстве. Для синхронизации проверь, что SQL-миграция Supabase для аватаров выполнена и есть подключение к интернету.");
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
+
   function handleProfileAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget;
     const file = input.files?.[0];
@@ -57,13 +142,7 @@ function AppContent() {
         context.fillStyle = "#28243a";
         context.fillRect(0, 0, 512, 512);
         context.drawImage(image, cropX, cropY, cropSize, cropSize, 0, 0, 512, 512);
-        const optimizedAvatar = canvas.toDataURL("image/jpeg", 0.84);
-        try {
-          localStorage.setItem("bg-profile-avatar", optimizedAvatar);
-          setProfileAvatar(optimizedAvatar);
-        } catch {
-          window.alert("Не удалось сохранить аватар. Попробуй изображение поменьше.");
-        }
+        void persistProfileAvatar(canvas.toDataURL("image/jpeg", 0.84));
       };
       image.src = String(reader.result);
     };
@@ -234,7 +313,7 @@ function AppContent() {
         </div>
       </section> : activeTab === "profile" ? <section className="profile-panel profile-showcase">
          <div className="simple-profile-card">
-           <button type="button" className="simple-profile-avatar" onClick={() => avatarInputRef.current?.click()} aria-label="Изменить аватар" title="Изменить аватар">{profileAvatar ? <img src={profileAvatar} alt="Аватар профиля"/> : (profileName.trim()[0] || "U").toUpperCase()}</button><input ref={avatarInputRef} className="profile-avatar-input" type="file" accept="image/*" onChange={handleProfileAvatarChange} aria-label="Выбрать изображение аватара"/>
+           <button type="button" className="simple-profile-avatar" onClick={() => avatarInputRef.current?.click()} disabled={avatarUploading} aria-label={avatarUploading ? "Загрузка аватара" : "Изменить аватар"} title={avatarUploading ? "Загрузка..." : "Изменить аватар"}>{profileAvatar ? <img src={profileAvatar} alt="Аватар профиля"/> : (profileName.trim()[0] || "U").toUpperCase()}</button><input ref={avatarInputRef} className="profile-avatar-input" type="file" accept="image/*" onChange={handleProfileAvatarChange} aria-label="Выбрать изображение аватара"/>
            <h1>{profileName || "Пользователь"}</h1>
          </div>
        </section> : <section className="chat-panel">
