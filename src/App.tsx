@@ -348,144 +348,103 @@ function AppContent() {
     setDraft("");
   }
 
-  if (!activeServer || !active) return <main className="discord-shell"><aside className="server-rail"><button className="server-icon brand-server"><Sparkles/></button><button className="server-icon add-server" onClick={createServer}><Plus/></button></aside><section className="chat-panel"><div className="channel-welcome"><h1>Создай свой первый сервер</h1><button onClick={createServer}>Добавить сервер</button></div></section></main>;
 
+  const isMobileChat = Boolean(selectedDirectUser);
   return (
-    <main className="discord-shell">
-      <aside className="server-rail">
-        <button className="server-icon brand-server" title="BrainGram"><Sparkles size={23}/></button>
-        <div className="rail-divider"/>
-        {servers.map((server) => <button key={server.id} className={`server-icon ${activeServerId === server.id ? "selected-server" : ""}`} title={server.name} onClick={() => selectServer(server)}><span className="server-letter">{server.letter}</span></button>)}
-        <button className="server-icon add-server" title="Добавить сервер" onClick={createServer}><Plus size={23}/></button>
-        <button className="server-icon explore-server" title="Найти пользователей" onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); }}><Compass size={21}/></button>
-        <div className="server-bottom"><button className="server-icon"><Inbox size={20}/></button></div>
+    <main className="telegram-app">
+      <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
+        <header className="tg-sidebar-header">
+          <button className="tg-menu-button" type="button" aria-label="Меню" onClick={() => setShowSettings(true)}>☰</button>
+          <strong>BrainGram</strong>
+          <button className="tg-compose-button" type="button" aria-label="Найти пользователя" onClick={() => document.getElementById("tg-search")?.focus()}><Plus size={21}/></button>
+        </header>
+        <div className="tg-search-wrap">
+          <Search size={18}/>
+          <input id="tg-search" value={friendInvite} onChange={(event) => setFriendInvite(event.target.value)} placeholder="Поиск" autoComplete="off"/>
+          {friendInvite && <button type="button" onClick={() => setFriendInvite("")}>×</button>}
+        </div>
+        <div className="tg-list-heading">{friendInvite.trim().length >= 3 ? "РЕЗУЛЬТАТЫ ПОИСКА" : "ЛИЧНЫЕ СООБЩЕНИЯ"}</div>
+        <div className="tg-chat-list">
+          {userSearchLoading && <div className="tg-list-empty">Ищем пользователей…</div>}
+          {userSearchError && <div className="tg-list-empty tg-error">{userSearchError}</div>}
+          {!userSearchLoading && userSearchResults.map((user) => (
+            <button type="button" key={user.id} className={`tg-chat-row ${selectedDirectUser?.id === user.id ? "tg-chat-row-active" : ""}`} onClick={() => void openDirectChat(user)}>
+              <span className="tg-avatar">{user.avatar_url ? <img src={user.avatar_url} alt=""/> : (user.display_name.trim()[0] || user.username[0] || "U").toUpperCase()}</span>
+              <span className="tg-chat-row-copy"><strong>{user.display_name}</strong><small>@{user.username}</small></span>
+            </button>
+          ))}
+          {!friendInvite.trim() && friends.map((friend) => (
+            <div className="tg-chat-row tg-contact-row" key={friend.id}>
+              <span className={`tg-avatar ${friend.color}`}>{friend.initials}</span>
+              <span className="tg-chat-row-copy"><strong>{friend.name}</strong><small>{friend.status}</small></span>
+            </div>
+          ))}
+          {!userSearchLoading && !userSearchError && friendInvite.trim().length >= 3 && userSearchResults.length === 0 && <div className="tg-list-empty">Никого не нашли. Проверь имя пользователя.</div>}
+          {!friendInvite.trim() && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь будут твои переписки.<br/><br/>Введи имя пользователя в поиске выше, чтобы найти человека и начать чат.</div>}
+        </div>
+        <nav className="tg-sidebar-bottom">
+          <button type="button" onClick={() => { setFriendInvite(""); setSelectedDirectUser(null); }}><MessageCircle size={19}/> Чаты</button>
+          <button type="button" onClick={() => setShowSettings(true)}><Settings size={19}/> Настройки</button>
+          <button type="button" onClick={() => setShowProfileEditor(true)}><UserRound size={19}/> Профиль</button>
+        </nav>
       </aside>
 
-      <aside className="channel-sidebar">
-        <button className="server-title">{activeServer.name} <ChevronDown size={17}/></button>
-        <div className="channel-scroll">
-          <div className="quick-actions"><button onClick={() => setActiveTab("notifications")}><Bell size={17}/> Уведомления</button><button onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); }}><Users size={17}/> Найти людей</button></div>
-          <div className="channel-heading"><span>ТЕКСТОВЫЕ КАНАЛЫ</span><button onClick={createChannel} title="Создать канал"><Plus size={17}/></button></div>
-          <nav className="channel-list">
-            {visibleChannels.map((channel) => <div key={channel.id} className={`channel-row ${activeId === channel.id ? "active-channel-row" : ""}`}><button className={`channel-item ${activeId === channel.id ? "active-channel" : ""}`} onClick={() => setActiveId(channel.id)}><Hash size={18}/><span>{channel.name}</span>{channel.unread ? <b>{channel.unread}</b> : null}</button><button className="delete-channel" title="Удалить канал" onClick={() => deleteChannel(channel)}><Trash2 size={14}/></button></div>)}
-            {visibleChannels.length === 0 && <p className="empty-search">Каналы не найдены</p>}
-          </nav>
-          <div className="channel-heading voice-heading"><span>ГОЛОСОВЫЕ КАНАЛЫ</span><button title="Добавить голосовой канал"><Plus size={17}/></button></div>
-          <button className="channel-item voice-channel"><Headphones size={18}/> <span>Общая комната</span></button>
-          <div className="voice-status"><div className="voice-status-top"><i/> Голосовой канал</div><small>Нажми, чтобы подключиться</small></div>
-        </div>
-        <div className="user-panel"><div className="user-avatar">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName.trim()[0] || "U").toUpperCase()}<i/></div><div className="user-meta"><strong>{profileName || "Пользователь"}</strong><small>{profileStatus}</small></div><button title="Микрофон"><Mic size={18}/></button><button title="Настройки" onClick={() => setShowSettings(true)}><Settings size={18}/></button></div>
-      </aside>
-
-      {activeTab === "servers" ? <section className="servers-panel">
-        <div className="servers-topbar"><div><Server size={20}/><strong>Серверы</strong></div><span>{servers.length} серверов</span></div>
-        <div className="servers-content">
-          <div className="servers-hero"><div><h1>Твои сообщества</h1><p>Создавай места для общения или присоединяйся к другим</p></div><div className="servers-hero-icon"><Server size={27}/></div></div>
-          <div className="servers-actions"><div><strong>Публичные и приватные серверы</strong><span>Публичные доступны всем, приватные — только по приглашению</span></div><button onClick={createServer}><Plus size={17}/> Создать сервер</button></div>
-          <div className="servers-section-title">МОИ СЕРВЕРЫ</div>
-          <div className="servers-grid">{servers.map((server) => <article className="my-server-card" key={server.id}>
-            <div className="my-server-banner"><div className="my-server-avatar">{server.letter}</div><span className={server.visibility === "private" ? "server-privacy private" : "server-privacy public"}>{server.visibility === "private" ? "🔒 Приватный" : "🌐 Публичный"}</span></div>
-            <div className="my-server-info"><strong>{server.name}</strong><span>{channels.filter((channel) => channel.serverId === server.id).length} канал(ов) · локальный сервер</span></div>
-            <div className="my-server-actions"><button onClick={() => { selectServer(server); setActiveTab("chats"); }}>Открыть сервер</button><button title="Изменить доступ" onClick={() => toggleServerVisibility(server.id)}>{server.visibility === "private" ? "Сделать публичным" : "Сделать приватным"}</button></div>
-          </article>)}</div>
-          <p className="servers-note">Пока серверы хранятся только на этом устройстве. Публичный и приватный режимы сейчас показывают выбранный тип доступа; приглашения и поиск серверов подключим вместе с backend.</p>
-        </div>
-      </section> : activeTab === "friends" ? <section className="friends-panel">
-        <div className="friends-topbar"><div><Users size={20}/><strong>Друзья</strong></div><span>{friends.length} друзей</span></div>
-        <div className="friends-content">
-          <div className="friends-hero"><div><h1>Твои друзья</h1><p>Общайся и оставайся на связи в BrainGram</p></div><div className="friends-hero-icon"><Users size={27}/></div></div>
-          <form className="friend-add-form user-discovery-form" onSubmit={(event) => event.preventDefault()}>
-            <div className="friend-add-copy"><strong>Найти пользователя</strong><span>Введи @username — минимум 3 символа</span></div>
-            <div className="friend-add-controls"><div><span>@</span><input value={friendInvite} onChange={(event) => setFriendInvite(event.target.value)} placeholder="username" maxLength={21} autoComplete="off"/></div><button type="submit" disabled={friendInvite.trim().replace(/^@/, "").length < 3}><Search size={16}/> Найти</button></div>
-          </form>
-          {userSearchLoading && <div className="user-search-status">Ищем пользователей…</div>}
-          {userSearchError && <div className="user-search-status user-search-error">{userSearchError}</div>}
-          {!userSearchLoading && !userSearchError && friendInvite.trim().replace(/^@/, "").length >= 3 && userSearchResults.length === 0 && <div className="friends-empty-small">Пользователи не найдены.</div>}
-          {userSearchResults.length > 0 && <div className="user-search-results">{userSearchResults.map((user) => <article className="user-search-result" key={user.id}>
-            <div className="user-search-avatar">{user.avatar_url ? <img src={user.avatar_url} alt=""/> : (user.display_name.trim()[0] || user.username[0] || "U").toUpperCase()}</div>
-            <div className="friend-details"><strong>{user.display_name}</strong><span>@{user.username}</span></div>
-            <button className="user-search-message" type="button" onClick={() => void openDirectChat(user)}><MessageCircle size={15}/> Написать</button>
-          </article>)}</div>}
-          <div className="friend-section-heading"><div><h2>Заявки в друзья</h2><span>{friendRequests.length}</span></div></div>
-          {friendRequests.length > 0 ? <div className="friend-request-list">{friendRequests.map((friend) => <article className="friend-card request-card" key={friend.id}><div className={`friend-avatar ${friend.color}`}>{friend.initials}</div><div className="friend-details"><strong>{friend.name}</strong><span>{friend.tag} · {friend.mutual}</span></div><div className="friend-card-actions"><button className="friend-accept" onClick={() => acceptFriend(friend.id)} title="Принять заявку"><Users size={15}/></button><button className="friend-decline" onClick={() => setFriendRequests((current) => current.filter((item) => item.id !== friend.id))} title="Отклонить заявку">×</button></div></article>)}</div> : <div className="friends-empty-small">Новых заявок пока нет.</div>}
-          <div className="friend-section-heading friends-list-heading"><div><h2>Все друзья</h2><span>{friends.length}</span></div><div className="friend-search"><Search size={15}/><input value={friendSearch} onChange={(event) => setFriendSearch(event.target.value)} placeholder="Поиск друзей"/></div></div>
-          <div className="friend-list">{friends.filter((friend) => `${friend.name} ${friend.tag}`.toLowerCase().includes(friendSearch.toLowerCase())).map((friend) => <article className="friend-card" key={friend.id}><div className={`friend-avatar ${friend.color}`}>{friend.initials}<i className={friend.status === "В сети" ? "online" : "idle"}/></div><div className="friend-details"><strong>{friend.name}</strong><span>{friend.tag} · {friend.status}</span></div><button className="friend-more" title="Удалить из друзей" onClick={() => setFriends((current) => current.filter((item) => item.id !== friend.id))}><MoreHorizontal size={20}/></button></article>)}
-          {friends.filter((friend) => `${friend.name} ${friend.tag}`.toLowerCase().includes(friendSearch.toLowerCase())).length === 0 && <div className="friends-empty-small">Друзья не найдены.</div>}
-          </div>
-        </div>
-      </section> : activeTab === "notifications" ? <section className="notifications-panel">
-        <div className="notifications-topbar"><div><Bell size={20}/><strong>Уведомления</strong>{unreadNotifications > 0 && <span className="notification-count">{unreadNotifications}</span>}</div><button onClick={markAllNotificationsRead} disabled={unreadNotifications === 0}><Inbox size={16}/> Прочитать все</button></div>
-        <div className="notifications-content">
-          <div className="notifications-heading"><div><h1>Входящие</h1><p>Здесь собраны важные события BrainGram</p></div><span>{notifications.length} всего</span></div>
-          <div className="notification-list">
-            {notifications.map((item) => <article key={item.id} className={item.unread ? "notification-card unread-notification" : "notification-card"}>
-              <div className={`notification-avatar ${item.color}`}>{item.initials}</div>
-              <div className="notification-copy"><div className="notification-title-row"><strong>{item.title}</strong>{item.unread && <i/>}</div><p>{item.text}</p><time>{item.time}</time>
-                {item.type === "friend" && <div className="notification-actions"><button onClick={() => setNotifications((current) => current.map((entry) => entry.id === item.id ? { ...entry, unread: false } : entry))}>Принять</button><button onClick={() => setNotifications((current) => current.filter((entry) => entry.id !== item.id))}>Отклонить</button></div>}
-              </div>
-              <button className="notification-dismiss" title="Убрать уведомление" onClick={() => setNotifications((current) => current.filter((entry) => entry.id !== item.id))}>×</button>
-            </article>)}
-            {notifications.length === 0 && <div className="notifications-empty"><Bell size={32}/><strong>Пока тихо</strong><p>Когда появятся новые события, они будут здесь.</p></div>}
-          </div>
-        </div>
-      </section> : activeTab === "profile" ? <section className="profile-panel profile-showcase">
-         <div className="simple-profile-card">
-           <button type="button" className="simple-profile-avatar" onClick={() => avatarInputRef.current?.click()} disabled={avatarUploading} aria-label={avatarUploading ? "Загрузка аватара" : "Изменить аватар"} title={avatarUploading ? "Загрузка..." : "Изменить аватар"}>{profileAvatar ? <img src={profileAvatar} alt="Аватар профиля"/> : (profileName.trim()[0] || "U").toUpperCase()}</button><input ref={avatarInputRef} className="profile-avatar-input" type="file" accept="image/*" onChange={handleProfileAvatarChange} aria-label="Выбрать изображение аватара"/>
-           <h1>{profileName || "Пользователь"}</h1>
-         </div>
-       </section> : <section className="chat-panel">
+      <section className={`tg-conversation ${isMobileChat ? "tg-conversation-visible-mobile" : ""}`}>
         {selectedDirectUser ? <>
-          <header className="chat-header direct-chat-header">
-            <button className="direct-back-button" type="button" onClick={closeDirectChat} aria-label="Назад к поиску"><ArrowLeft size={19}/></button>
-            <div className="direct-peer-avatar">{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</div>
-            <div className="direct-peer-meta"><strong>{selectedDirectUser.display_name}</strong><span>@{selectedDirectUser.username}</span></div>
+          <header className="tg-chat-header">
+            <button className="tg-back" type="button" onClick={closeDirectChat} aria-label="Назад"><ArrowLeft size={21}/></button>
+            <span className="tg-avatar tg-header-avatar">{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</span>
+            <div className="tg-peer"><strong>{selectedDirectUser.display_name}</strong><small>@{selectedDirectUser.username}</small></div>
+            <button className="tg-header-action" type="button" title="Поиск" onClick={() => setFriendInvite(selectedDirectUser.username)}><Search size={20}/></button>
+            <button className="tg-header-action" type="button" title="Ещё" onClick={() => setShowSettings(true)}><MoreHorizontal size={22}/></button>
           </header>
-          <div className="chat-content direct-chat-content">
-            {directLoading && <div className="direct-chat-placeholder">Открываем переписку…</div>}
-            {directError && <div className="direct-chat-error">{directError}</div>}
-            {!directLoading && !directError && directMessages.length === 0 && <div className="direct-chat-placeholder"><MessageCircle size={34}/><strong>Это начало переписки</strong><span>Отправь первое сообщение пользователю @{selectedDirectUser.username}</span></div>}
-            <div className="direct-message-list">{directMessages.map((message) => {
-              const mine = message.sender_id === currentUserId;
-              return <article key={message.id} className={mine ? "direct-message mine" : "direct-message"}>
-                <div className="direct-message-avatar">{mine ? (profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName.trim()[0] || "U").toUpperCase()) : (selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase())}</div>
-                <div className="direct-message-body"><div className="direct-message-meta"><strong>{mine ? profileName : selectedDirectUser.display_name}</strong><time>{new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time></div><p>{message.body}</p></div>
-              </article>;
-            })}</div>
+          <div className="tg-message-area">
+            {directLoading && <div className="tg-center-note">Загружаем сообщения…</div>}
+            {directError && <div className="tg-error-banner">{directError}</div>}
+            {!directLoading && !directError && directMessages.length === 0 && <div className="tg-empty-chat"><div className="tg-empty-icon"><MessageCircle size={30}/></div><strong>Это начало переписки</strong><span>Напиши @{selectedDirectUser.username} первое сообщение</span></div>}
+            <div className="tg-messages">
+              {directMessages.map((message) => {
+                const mine = message.sender_id === currentUserId;
+                return <article key={message.id} className={`tg-bubble ${mine ? "tg-bubble-out" : "tg-bubble-in"}`}>
+                  <p>{message.body}</p>
+                  <time>{new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+                </article>;
+              })}
+            </div>
           </div>
-          <form className="message-composer direct-message-composer" onSubmit={submitDirectMessage}>
-            <input value={directDraft} onChange={(event) => setDirectDraft(event.target.value)} placeholder={directConversationId ? "Написать личное сообщение…" : "Подключаем переписку…"} maxLength={4000} disabled={!directConversationId || directLoading || directSending}/>
-            <button className="send-message" type="submit" title="Отправить" disabled={!directDraft.trim() || !directConversationId || directSending}><Send size={18}/></button>
+          <form className="tg-composer" onSubmit={submitDirectMessage}>
+            <button type="button" className="tg-attach" title="Прикрепить файл"><Paperclip size={21}/></button>
+            <input value={directDraft} onChange={(event) => setDirectDraft(event.target.value)} placeholder="Сообщение…" maxLength={4000} disabled={!directConversationId || directLoading || directSending}/>
+            <button type="button" className="tg-attach" title="Эмодзи"><Smile size={21}/></button>
+            <button className="tg-send" type="submit" title="Отправить" disabled={!directDraft.trim() || !directConversationId || directSending}><Send size={19}/></button>
           </form>
-        </> : <>
-        <header className="chat-header"><div className="header-channel"><Hash size={23}/><strong>{active.name}</strong></div><div className="header-tools"><button title="Уведомления"><Bell/></button><button title="Закреплённое"><Pin/></button><button title="Участники"><Users/></button><div className="header-search"><Search size={16}/><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Поиск каналов"/></div><button title="Входящие"><Inbox/></button><button title="Справка"><MessageCircle/></button></div></header>
-        <div className="chat-content">
-          <div className="channel-welcome"><div className="hash-welcome"><Hash size={34}/></div><h1>Добро пожаловать в #{active.name}!</h1><p>Это начало канала #{active.name}.</p></div>
-          <div className="message-list">{(messages[active.id] ?? []).map((message, index) => <article key={index} className="message-entry"><div className={`message-avatar ${index % 2 ? "avatar-blue" : "avatar-purple"}`}>{index % 2 ? "M" : "U"}</div><div className="message-body"><div className="message-author">{profileName} <time>Сегодня</time></div><p>{message}</p></div></article>)}</div>
-        </div>
-        <form className="message-composer" onSubmit={(e) => { e.preventDefault(); sendMessage(); }}><button type="button" title="Прикрепить файл"><Plus size={21}/></button><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Написать в #${active.name}`}/><button type="button" title="Прикрепить файл"><Paperclip size={19}/></button><button type="button" title="Эмодзи"><Smile size={20}/></button><button className="send-message" type="submit" title="Отправить"><Send size={18}/></button></form>
-        </>}
-      </section>}
-      <aside className="member-sidebar"><div className="member-title">УЧАСТНИКИ — 1</div><div className="member-group">В СЕТИ — 1</div><div className="member"><div className="member-avatar purple">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName.trim()[0] || "U").toUpperCase()}<i/></div><span>{profileName}</span><b>👑</b></div></aside>
-      <button type="button" className="bottom-nav user-name-bar" aria-label="Открыть профиль" onClick={() => setActiveTab("profile")}><span>@{profileTag || "user"}</span></button>
-      {showSettings && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowSettings(false); }}><section className="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title"><button className="modal-close" type="button" aria-label="Закрыть" onClick={() => setShowSettings(false)}>×</button><div className="modal-icon"><Settings size={23}/></div><h2 id="settings-title">Настройки</h2><p className="modal-subtitle">Управление твоим профилем BrainGram</p><div className="settings-row"><div><strong>Имя пользователя</strong><span>@{profileTag || "user"}</span></div><UserRound size={18}/></div><div className="settings-row"><div><strong>Статус</strong><span>{profileStatus}</span></div><span className="settings-status-dot"/></div><div className="settings-info"><strong>Приватность и безопасность</strong><p>Дополнительные настройки приватности, входа и защиты аккаунта появятся после подключения backend.</p></div><div className="modal-actions"><button type="button" className="create-modal" onClick={() => setShowSettings(false)}>Готово</button></div></section></div>}
-      {showChannelModal && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowChannelModal(false); }}>
-        <section className="channel-modal" role="dialog" aria-modal="true" aria-labelledby="channel-modal-title">
-          <button className="modal-close" type="button" aria-label="Закрыть" onClick={() => setShowChannelModal(false)}>×</button>
-          <div className="modal-icon"><Hash size={24}/></div>
-          <h2 id="channel-modal-title">Создать канал</h2>
-          <p className="modal-subtitle">Канал появится на сервере <strong>{activeServer.name}</strong>.</p>
-          <form onSubmit={submitNewChannel}>
-            <label htmlFor="new-channel-name">НАЗВАНИЕ КАНАЛА</label>
-            <div className="channel-name-input"><Hash size={19}/><input id="new-channel-name" autoFocus maxLength={40} value={newChannelName} onChange={(event) => setNewChannelName(event.target.value)} placeholder="например, обсуждение" required /></div>
-            <label htmlFor="new-channel-description">ТЕМА КАНАЛА <span>НЕОБЯЗАТЕЛЬНО</span></label>
-            <textarea id="new-channel-description" rows={3} maxLength={120} value={newChannelDescription} onChange={(event) => setNewChannelDescription(event.target.value)} placeholder="О чём будем говорить?"/>
-            <div className="modal-hint"><Hash size={14}/> Текстовый канал · Видят участники сервера</div>
-            <div className="modal-actions"><button type="button" className="cancel-modal" onClick={() => setShowChannelModal(false)}>Отмена</button><button type="submit" className="create-modal" disabled={!newChannelName.trim()}>Создать канал</button></div>
-          </form>
+        </> : <div className="tg-welcome">
+          <div className="tg-welcome-card"><div className="tg-welcome-logo"><MessageCircle size={36}/></div><h1>BrainGram</h1><p>Выбери переписку или найди пользователя, чтобы начать общение.</p></div>
+        </div>}
+      </section>
+
+      {showSettings && <div className="tg-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowSettings(false); }}>
+        <section className="tg-modal" role="dialog" aria-modal="true" aria-labelledby="tg-settings-title">
+          <button className="tg-modal-close" type="button" onClick={() => setShowSettings(false)}>×</button>
+          <h2 id="tg-settings-title">Настройки</h2>
+          <div className="tg-settings-user"><span className="tg-avatar">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</span><div><strong>{profileName}</strong><small>@{profileTag}</small></div></div>
+          <p>Статус: {profileStatus}</p><p>{profileAbout}</p>
+          <button className="tg-primary" type="button" onClick={() => { setShowSettings(false); setShowProfileEditor(true); }}>Изменить профиль</button>
+        </section>
+      </div>}
+      {showProfileEditor && <div className="tg-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowProfileEditor(false); }}>
+        <section className="tg-modal" role="dialog" aria-modal="true" aria-labelledby="tg-profile-title">
+          <button className="tg-modal-close" type="button" onClick={() => setShowProfileEditor(false)}>×</button>
+          <h2 id="tg-profile-title">Мой профиль</h2>
+          <button className="tg-profile-avatar" type="button" onClick={() => avatarInputRef.current?.click()}>{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</button>
+          <input ref={avatarInputRef} className="tg-hidden-input" type="file" accept="image/*" onChange={handleProfileAvatarChange}/>
+          <strong>{profileName}</strong><span>@{profileTag}</span><p>{profileAbout}</p>
+          <button className="tg-primary" type="button" onClick={() => setShowProfileEditor(false)}>Готово</button>
         </section>
       </div>}
     </main>
   );
+
 }
 
 export default function App() {
