@@ -387,6 +387,10 @@ function AppContent() {
 
 
   const isMobileChat = Boolean(selectedDirectUser);
+  const chatSearchTerm = friendInvite.trim().replace(/^@/, "").toLocaleLowerCase();
+  const visibleRecentChats = recentChats.filter((chat) =>
+    !chatSearchTerm || chat.display_name.toLocaleLowerCase().includes(chatSearchTerm) || chat.username.toLocaleLowerCase().includes(chatSearchTerm) || chat.last_message.toLocaleLowerCase().includes(chatSearchTerm),
+  );
   return (
     <main className="telegram-app">
       <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
@@ -412,7 +416,7 @@ function AppContent() {
           ))}
           {!friendInvite.trim() && recentChatsLoading && <div className="tg-list-empty">Загружаем недавние переписки…</div>}
           {!friendInvite.trim() && recentChatsError && recentChats.length === 0 && <div className="tg-list-empty tg-error">{recentChatsError}</div>}
-          {!friendInvite.trim() && recentChats.map((chat) => (
+          {visibleRecentChats.map((chat) => (
             <button
               type="button"
               key={chat.conversation_id}
@@ -433,6 +437,8 @@ function AppContent() {
             </button>
           ))}
           {!friendInvite.trim() && !recentChatsLoading && !recentChatsError && recentChats.length === 0 && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь пока нет переписок.<br/><br/>Найди человека через поиск выше, чтобы начать общение. После первого сообщения чат появится здесь.</div>}
+          {chatSearchTerm.length > 0 && chatSearchTerm.length < 3 && visibleRecentChats.length === 0 && <div className="tg-list-empty">В недавних чатах совпадений нет. Введи ещё символы, чтобы найти пользователя.</div>}
+          {chatSearchTerm.length >= 3 && visibleRecentChats.length === 0 && userSearchResults.length === 0 && !userSearchLoading && !userSearchError && <div className="tg-list-empty">Ничего не найдено.</div>}
           {!userSearchLoading && !userSearchError && friendInvite.trim().length >= 3 && userSearchResults.length === 0 && <div className="tg-list-empty">Никого не нашли. Проверь имя пользователя.</div>}
         </div>
         <nav className="tg-sidebar-bottom">
@@ -446,7 +452,7 @@ function AppContent() {
         {selectedDirectUser ? <>
           <header className="tg-chat-header">
             <button className="tg-back" type="button" onClick={closeDirectChat} aria-label="Назад"><ArrowLeft size={21}/></button>
-            <span className="tg-avatar tg-header-avatar">{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</span>
+            <button className="tg-avatar tg-header-avatar" type="button" aria-label="Открыть профиль" onClick={() => setShowProfileEditor(true)}>{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</button>
             <div className="tg-peer"><strong>{selectedDirectUser.display_name}</strong><small>@{selectedDirectUser.username}</small></div>
             <button className="tg-header-action" type="button" title="Поиск" onClick={() => setFriendInvite(selectedDirectUser.username)}><Search size={20}/></button>
             <button className="tg-header-action" type="button" title="Ещё" onClick={() => setShowSettings(true)}><MoreHorizontal size={22}/></button>
@@ -460,7 +466,7 @@ function AppContent() {
                 const mine = message.sender_id === currentUserId;
                 return <article key={message.id} className={`tg-bubble ${mine ? "tg-bubble-out" : "tg-bubble-in"}`}>
                   <p>{message.body}</p>
-                  <time>{new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+                  <span className="tg-bubble-meta"><time>{new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>{mine && <span className="tg-message-checks" aria-label="Отправлено">✓✓</span>}</span>
                 </article>;
               })}
             </div>
