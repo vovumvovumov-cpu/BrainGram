@@ -9,6 +9,17 @@ export type DirectMessage = {
   created_at: string;
 };
 
+export type DirectConversationSummary = {
+  conversation_id: string;
+  peer_id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  last_message: string;
+  last_message_at: string | null;
+  last_sender_id: string | null;
+};
+
 function getClient() {
   if (!supabase) {
     throw new Error("Supabase не настроен. Добавь VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY.");
@@ -16,16 +27,37 @@ function getClient() {
   return supabase;
 }
 
-/**
- * Returns the one-to-one conversation for the current user and another account.
- * The database function creates it once and reuses it on later calls.
- */
+/** Lists recent one-to-one conversations for the signed-in user. */
+export async function loadDirectConversationSummaries(): Promise<DirectConversationSummary[]> {
+  const client = getClient();
+  const { data, error } = await client.rpc("list_direct_conversations");
+  if (error) throw error;
+  return (data ?? []) as DirectConversationSummary[];
+}
+
+/** Refreshes recent chats when any participant-visible direct message is inserted. */
+export function subscribeToDirectMessageActivity(onActivity: () => void): () => void {
+  const client = getClient();
+  const channel: RealtimeChannel = client
+    .channel("direct-message-list-activity")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "direct_messages" },
+      () => onActivity(),
+    )
+    .subscribe();
+
+  return () => {
+    void client.removeChannel(channel);
+  };
+}
+
+/** Returns the one-to-one conversation for the current user and another account. */
 export async function getOrCreateDirectConversation(otherUserId: string): Promise<string> {
   const client = getClient();
   const { data, error } = await client.rpc("get_or_create_direct_conversation", {
     other_user_id: otherUserId,
   });
-
   if (error) throw error;
   if (typeof data !== "string") {
     throw new Error("Не удалось получить идентификатор личного чата.");
@@ -34,10 +66,7 @@ export async function getOrCreateDirectConversation(otherUserId: string): Promis
 }
 
 /** Loads the latest messages in chronological order for display. */
-export async function loadDirectMessages(
-  conversationId: string,
-  limit = 50,
-): Promise<DirectMessage[]> {
+export async function loadDirectMessages(conversationId: string, limit = 50): Promise<DirectMessage[]> {
   const client = getClient();
   const safeLimit = Math.max(1, Math.min(Math.floor(limit), 100));
   const { data, error } = await client
@@ -46,19 +75,14 @@ export async function loadDirectMessages(
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: true })
     .limit(safeLimit);
-
   if (error) throw error;
   return (data ?? []) as DirectMessage[];
 }
 
 /** Sends a text message as the currently authenticated user. */
-export async function sendDirectMessage(
-  conversationId: string,
-  body: string,
-): Promise<DirectMessage> {
+export async function sendDirectMessage(conversationId: string, body: string): Promise<DirectMessage> {
   const client = getClient();
   const cleanBody = body.trim();
-
   if (!cleanBody) throw new Error("Сообщение не может быть пустым.");
   if (cleanBody.length > 4000) throw new Error("Сообщение слишком длинное (максимум 4000 символов).");
 
@@ -68,38 +92,27 @@ export async function sendDirectMessage(
 
   const { data, error } = await client
     .from("direct_messages")
-    .insert({
-      conversation_id: conversationId,
-      sender_id: authData.user.id,
-      body: cleanBody,
-    })
+    .insert({ conversation_id: conversationId, sender_id: authData.user.id, body: cleanBody })
     .select("id, conversation_id, sender_id, body, created_at")
     .single();
-
   if (error) throw error;
   return data as DirectMessage;
 }
 
-/** Subscribes to new messages. Call the returned function when leaving the chat. */
+/** Subscribes to new messages in the open conversation. */
 export function subscribeToDirectMessages(
   conversationId: string,
   onMessage: (message: DirectMessage) => void,
 ): () => void {
   const client = getClient();
-  let channel: RealtimeChannel = client
+  const channel: RealtimeChannel = client
     .channel(`direct-messages:${conversationId}`)
     .on(
       "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "direct_messages",
-        filter: `conversation_id=eq.${conversationId}`,
-      },
+      { event: "INSERT", schema: "public", table: "direct_messages", filter: `conversation_id=eq.${conversationId}` },
       (payload) => onMessage(payload.new as DirectMessage),
     )
     .subscribe();
-
   return () => {
     void client.removeChannel(channel);
   };
