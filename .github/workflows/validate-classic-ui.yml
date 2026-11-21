@@ -3,6 +3,8 @@ name: Validate BrainGram classic UI
 on:
   push:
     branches: ["telegram-classic-ui"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
