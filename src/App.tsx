@@ -445,12 +445,20 @@ function AppContent() {
           <button type="button" className={!selectedDirectUser && activeTab === "chats" ? "tg-nav-active" : ""} onClick={() => { setFriendInvite(""); setSelectedDirectUser(null); setActiveTab("chats"); }}><MessageCircle size={34} strokeWidth={1.9}/><span>Чаты</span></button>
           <button type="button" className={activeTab === "friends" ? "tg-nav-active" : ""} onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); document.getElementById("tg-search")?.focus(); }}><UserRound size={34} strokeWidth={1.9}/><span>Контакты</span></button>
           <button type="button" className={showSettings ? "tg-nav-active" : ""} onClick={() => setShowSettings(true)}><Settings size={34} strokeWidth={1.9}/><span>Настройки</span></button>
-          <button type="button" onClick={() => setShowProfileEditor(true)}><span className="tg-nav-profile-avatar">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</span><span>Профиль</span></button>
+          <button type="button" className={activeTab === "profile" ? "tg-nav-active" : ""} onClick={() => { setSelectedDirectUser(null); setActiveTab("profile"); }}><span className="tg-nav-profile-avatar">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</span><span>Профиль</span></button>
         </nav>
       </aside>
 
       <section className={`tg-conversation ${isMobileChat ? "tg-conversation-visible-mobile" : ""}`}>
-        {selectedDirectUser ? <>
+        {activeTab === "profile" && !selectedDirectUser ? <div className="tg-profile-page">
+          <div className="tg-profile-card">
+            <button className="tg-profile-page-avatar" type="button" onClick={() => avatarInputRef.current?.click()} aria-label="Изменить фотографию профиля">
+              {profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}
+            </button>
+            <input ref={avatarInputRef} className="tg-hidden-input" type="file" accept="image/*" onChange={handleProfileAvatarChange}/>
+            <strong>{profileName}</strong>
+          </div>
+        </div> : selectedDirectUser ? <>
           <header className="tg-chat-header">
             <button className="tg-back" type="button" onClick={closeDirectChat} aria-label="Назад"><ArrowLeft size={21}/></button>
             <button className="tg-avatar tg-header-avatar" type="button" aria-label="Открыть профиль" onClick={() => setShowProfileEditor(true)}>{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</button>
