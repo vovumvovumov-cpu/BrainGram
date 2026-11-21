@@ -1,0 +1,204 @@
+/* BrainGram — classic Telegram-inspired polish.
+   Keeps BrainGram branding and existing Supabase chat behavior. */
+.telegram-app {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #dfe7ed;
+  color: #17212b;
+}
+.tg-sidebar {
+  background: #fff;
+  border-right: 1px solid #dce3e8;
+}
+.tg-sidebar-header {
+  height: 58px;
+  min-height: 58px;
+  padding: 0 15px;
+}
+.tg-sidebar-header strong {
+  color: #229ed9;
+  letter-spacing: -.35px;
+}
+.tg-menu-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 20px;
+}
+.tg-menu-button:hover,
+.tg-header-action:hover,
+.tg-attach:hover {
+  background: #f1f5f7;
+  color: #229ed9;
+}
+.tg-search-wrap {
+  height: 40px;
+  margin: 10px 12px 7px;
+  background: #f1f3f5;
+  border: 1px solid transparent;
+  transition: border-color .15s, background .15s;
+}
+.tg-search-wrap:focus-within {
+  background: #fff;
+  border-color: #8ac9e8;
+}
+.tg-chat-row {
+  min-height: 72px;
+  padding: 9px 13px;
+  gap: 11px;
+  transition: background .12s ease;
+}
+.tg-chat-row:hover,
+.tg-chat-row-active {
+  background: #f1f6f9;
+}
+.tg-avatar {
+  width: 49px;
+  height: 49px;
+  box-shadow: inset 0 0 0 1px #17212b0b;
+}
+.tg-chat-row-copy {
+  gap: 5px;
+}
+.tg-chat-row-copy strong {
+  font-size: 14px;
+  letter-spacing: -.1px;
+}
+.tg-chat-row-copy small {
+  font-size: 12px;
+  color: #71818d;
+}
+.tg-list-heading {
+  padding: 9px 16px 6px;
+  color: #8b9aa5;
+  font-size: 10px;
+  letter-spacing: .65px;
+}
+.tg-sidebar-bottom {
+  background: #fff;
+  border-top: 1px solid #edf0f2;
+}
+.tg-sidebar-bottom button {
+  min-height: 42px;
+  padding: 0 10px;
+  border-radius: 9px;
+}
+.tg-sidebar-bottom button:hover {
+  background: #f1f6f9;
+  color: #229ed9;
+}
+.tg-conversation {
+  background: #dfe7ed;
+}
+.tg-chat-header {
+  height: 58px;
+  min-height: 58px;
+  padding: 0 18px;
+  box-shadow: 0 1px 2px #17212b08;
+}
+.tg-peer strong {
+  font-size: 15px;
+  font-weight: 650;
+}
+.tg-peer small {
+  color: #7c8b96;
+}
+.tg-message-area {
+  background-color: #dfe7ed;
+  background-image:
+    radial-gradient(#b9c9d4 0.65px, transparent .65px),
+    radial-gradient(#c4d1da 0.55px, transparent .55px);
+  background-position: 0 0, 9px 9px;
+  background-size: 18px 18px;
+}
+.tg-center-note {
+  background: #ffffffd9;
+  box-shadow: 0 1px 3px #17212b12;
+}
+.tg-bubble {
+  padding: 8px 11px 7px;
+  box-shadow: 0 1px 1px #17212b14;
+}
+.tg-bubble-in {
+  background: #fff;
+}
+.tg-bubble-out {
+  background: #e4ffc9;
+}
+.tg-bubble p {
+  font-size: 14px;
+  line-height: 1.42;
+}
+.tg-bubble time {
+  color: #7b9181;
+}
+.tg-composer {
+  min-height: 64px;
+  padding: 9px 15px;
+  gap: 9px;
+  box-shadow: 0 -1px 2px #17212b08;
+}
+.tg-composer input {
+  height: 43px;
+  background: #f1f4f6;
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s;
+}
+.tg-composer input:focus {
+  background: #fff;
+  border-color: #8ac9e8;
+}
+.tg-send {
+  width: 42px;
+  height: 42px;
+  background: #229ed9;
+  box-shadow: 0 2px 5px #229ed933;
+  transition: transform .12s, background .12s;
+}
+.tg-send:hover:not(:disabled) {
+  background: #168ac3;
+  transform: translateY(-1px);
+}
+.tg-welcome-card {
+  background: #ffffffc9;
+  border: 1px solid #ffffffb8;
+  box-shadow: 0 8px 30px #526b7a12;
+}
+.tg-welcome-logo {
+  background: #229ed9;
+  box-shadow: 0 5px 14px #229ed933;
+}
+.tg-modal {
+  border: 1px solid #e6edf1;
+}
+.tg-primary {
+  background: #229ed9;
+}
+.tg-primary:hover {
+  background: #168ac3;
+}
+@media (min-width: 701px) {
+  .telegram-app {
+    grid-template-columns: 350px minmax(0, 1fr);
+  }
+  .tg-chat-list {
+    scrollbar-width: thin;
+    scrollbar-color: #c5d0d7 transparent;
+  }
+  .tg-message-area {
+    padding-left: clamp(24px, 7vw, 110px);
+    padding-right: clamp(24px, 7vw, 110px);
+  }
+}
+@media (max-width: 700px) {
+  .tg-sidebar-header,
+  .tg-chat-header {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+  .tg-sidebar-bottom {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+  .tg-composer {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}
