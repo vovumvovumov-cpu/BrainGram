@@ -283,6 +283,7 @@ function AppContent() {
     try {
       const conversationId = await getOrCreateDirectConversation(user.id);
       if (requestId !== directOpenRequestRef.current) return;
+      void loadDirectConversationSummaries().then(setRecentChats).catch(() => undefined);
       setDirectConversationId(conversationId);
       const history = await loadDirectMessages(conversationId);
       if (requestId !== directOpenRequestRef.current) return;
