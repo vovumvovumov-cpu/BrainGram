@@ -607,3 +607,71 @@ button{font:inherit;cursor:pointer}
   .direct-message-composer { background:#fff; }
   .direct-message-composer input { background:#f1f4f6; color:#17212b; }
 }
+
+
+/* BrainGram — rebuilt Telegram-style messenger interface */
+.telegram-app{height:100dvh;width:100%;display:grid;grid-template-columns:360px minmax(0,1fr);background:#dce6ee;color:#17212b;overflow:hidden;font-family:Arial,Helvetica,sans-serif}
+.tg-sidebar{display:flex;flex-direction:column;min-width:0;background:#fff;border-right:1px solid #dce3e8;z-index:2}
+.tg-sidebar-header{height:60px;min-height:60px;display:flex;align-items:center;gap:16px;padding:0 16px;border-bottom:1px solid #edf0f2}
+.tg-sidebar-header strong{font-size:19px;font-weight:700;color:#229ed9;flex:1}
+.tg-menu-button,.tg-compose-button,.tg-header-action,.tg-back,.tg-attach{border:0;background:transparent;color:#7d8b96;display:grid;place-items:center;cursor:pointer}
+.tg-menu-button{font-size:21px;width:30px}.tg-compose-button{width:36px;height:36px;border-radius:50%;background:#e8f4fb;color:#229ed9}
+.tg-search-wrap{height:42px;margin:12px 14px 8px;padding:0 13px;display:flex;align-items:center;gap:10px;border-radius:22px;background:#f1f3f5;color:#8b99a4}
+.tg-search-wrap input{border:0;outline:0;background:transparent;min-width:0;flex:1;font-size:14px;color:#17212b}
+.tg-search-wrap button{border:0;background:none;color:#7d8b96;font-size:22px}
+.tg-list-heading{padding:10px 18px 6px;font-size:10px;letter-spacing:1px;font-weight:700;color:#92a0aa}
+.tg-chat-list{flex:1;overflow:auto}
+.tg-chat-row{width:100%;min-height:72px;padding:10px 16px;display:flex;align-items:center;gap:12px;text-align:left;border:0;background:#fff;cursor:pointer;color:#17212b}
+.tg-chat-row:hover,.tg-chat-row-active{background:#f0f6fa}
+.tg-avatar{width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:50%;overflow:hidden;background:#64a9dc;color:white;font-size:19px;font-weight:600}
+.tg-avatar img{width:100%;height:100%;object-fit:cover}
+.tg-chat-row-copy{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.tg-chat-row-copy strong{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg-chat-row-copy small{font-size:12px;color:#8b99a4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg-list-empty{padding:20px 18px;color:#84939e;font-size:13px;line-height:1.55}
+.tg-list-hint{padding-top:26px}
+.tg-error{color:#d65b63}
+.tg-sidebar-bottom{height:58px;min-height:58px;border-top:1px solid #edf0f2;display:flex;justify-content:space-around;align-items:center}
+.tg-sidebar-bottom button{border:0;background:none;color:#6d7d88;display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer}
+.tg-conversation{display:flex;flex-direction:column;min-width:0;min-height:0;background:#dce6ee}
+.tg-chat-header{height:60px;min-height:60px;padding:0 20px;display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid #e6ebef}
+.tg-back{display:none}.tg-header-avatar{width:40px;height:40px}.tg-peer{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}.tg-peer strong{font-size:15px}.tg-peer small{font-size:12px;color:#8a99a4}
+.tg-header-action{width:36px;height:36px;border-radius:50%}.tg-header-action:hover{background:#f1f5f7}
+.tg-message-area{flex:1;min-height:0;overflow:auto;padding:20px 7%;display:flex;flex-direction:column;background-color:#dce6ee;background-image:radial-gradient(#c6d3dc 0.7px,transparent .7px);background-size:18px 18px}
+.tg-empty-chat{margin:auto;display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;color:#70818d}
+.tg-empty-icon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#c5d6e1;color:#fff;margin-bottom:4px}
+.tg-empty-chat strong{font-size:15px;color:#536571}.tg-empty-chat span{font-size:12px}
+.tg-center-note{margin:12px auto;padding:7px 14px;border-radius:18px;background:#ffffffc9;color:#70818d;font-size:12px}
+.tg-error-banner{padding:10px 14px;margin:10px auto;border-radius:12px;background:#fff0f0;color:#bd4c55;font-size:12px}
+.tg-messages{display:flex;flex-direction:column;gap:7px;margin-top:auto}
+.tg-bubble{max-width:min(72%,620px);padding:9px 12px 6px;border-radius:13px;box-shadow:0 1px 2px #33445518;display:flex;align-items:flex-end;gap:12px}
+.tg-bubble p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.45;color:#17212b}
+.tg-bubble time{flex:none;font-size:10px;color:#82919b}
+.tg-bubble-in{align-self:flex-start;background:#fff;border-bottom-left-radius:4px}
+.tg-bubble-out{align-self:flex-end;background:#e2ffc7;border-bottom-right-radius:4px}
+.tg-composer{min-height:68px;padding:10px 18px;display:flex;align-items:center;gap:10px;background:#fff;border-top:1px solid #e7ecef}
+.tg-composer input{height:42px;min-width:0;flex:1;padding:0 16px;border:0;outline:0;border-radius:22px;background:#f1f4f6;color:#17212b;font-size:14px}
+.tg-attach{width:30px;height:36px}.tg-send{width:42px;height:42px;border:0;border-radius:50%;display:grid;place-items:center;background:#229ed9;color:#fff;cursor:pointer}.tg-send:disabled{opacity:.45}
+.tg-welcome{flex:1;display:grid;place-items:center;padding:24px}.tg-welcome-card{max-width:340px;text-align:center;padding:30px;border-radius:20px;background:#ffffffb8;box-shadow:0 5px 24px #536b7b12}
+.tg-welcome-logo{width:72px;height:72px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#229ed9;color:#fff}.tg-welcome-card h1{margin:0 0 9px;font-size:25px;color:#229ed9}.tg-welcome-card p{margin:0;color:#71818d;font-size:14px;line-height:1.5}
+.tg-modal-backdrop{position:fixed;inset:0;z-index:20;background:#17212b66;display:grid;place-items:center;padding:18px}
+.tg-modal{position:relative;width:min(390px,100%);padding:26px;border-radius:18px;background:#fff;box-shadow:0 18px 60px #17212b30;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.tg-modal h2{margin:0 0 6px;font-size:21px}.tg-modal p{margin:0;color:#71818d;font-size:13px;line-height:1.5}
+.tg-modal-close{position:absolute;right:14px;top:10px;border:0;background:none;color:#82919b;font-size:27px;cursor:pointer}
+.tg-settings-user{display:flex;align-items:center;gap:12px}.tg-settings-user div{display:flex;flex-direction:column;gap:4px}.tg-settings-user small,.tg-modal>span{color:#84939e;font-size:12px}
+.tg-primary{height:40px;padding:0 18px;border:0;border-radius:9px;background:#229ed9;color:#fff;font-weight:600;cursor:pointer}
+.tg-profile-avatar{width:82px;height:82px;border:0;border-radius:50%;background:#64a9dc;color:#fff;font-size:30px;overflow:hidden;cursor:pointer}.tg-profile-avatar img{width:100%;height:100%;object-fit:cover}.tg-hidden-input{display:none}
+@media(max-width:700px){
+ .telegram-app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr);height:100dvh}
+ .tg-sidebar{grid-column:1;grid-row:1}.tg-sidebar-hidden-mobile{display:none}
+ .tg-conversation{display:none;grid-column:1;grid-row:1}.tg-conversation-visible-mobile{display:flex}
+ .tg-chat-header{height:56px;min-height:56px;padding:0 10px;gap:8px}
+ .tg-back{display:grid;width:34px;height:34px}
+ .tg-message-area{padding:14px 10px}
+ .tg-bubble{max-width:86%}
+ .tg-composer{min-height:62px;padding:8px 9px;gap:6px}
+ .tg-attach{width:28px}.tg-send{width:39px;height:39px}
+ .tg-sidebar-header{height:56px;min-height:56px}
+ .tg-chat-row{min-height:70px;padding:9px 13px}
+ .tg-sidebar-bottom{height:54px;min-height:54px}
+}
