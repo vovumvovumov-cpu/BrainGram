@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import AuthGate from "./components/AuthGate";
 import { supabase } from "./lib/supabase";
 import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
-import { getOrCreateDirectConversation, loadDirectMessages, sendDirectMessage, subscribeToDirectMessages, type DirectMessage } from "./lib/directMessages";
+import { getOrCreateDirectConversation, loadDirectMessages, loadDirectConversationSummaries, sendDirectMessage, subscribeToDirectMessages, subscribeToDirectMessageActivity, type DirectConversationSummary, type DirectMessage } from "./lib/directMessages";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
@@ -165,6 +165,9 @@ function AppContent() {
   const [directLoading, setDirectLoading] = useState(false);
   const [directSending, setDirectSending] = useState(false);
   const [directError, setDirectError] = useState("");
+  const [recentChats, setRecentChats] = useState<DirectConversationSummary[]>([]);
+  const [recentChatsLoading, setRecentChatsLoading] = useState(true);
+  const [recentChatsError, setRecentChatsError] = useState("");
   const directOpenRequestRef = useRef(0);
   const [friendRequests, setFriendRequests] = useState<{ id: number; name: string; tag: string; initials: string; color: string; mutual: string }[]>([]);
   const [friends, setFriends] = useState<{ id: number; name: string; tag: string; initials: string; color: string; status: string }[]>([]);
@@ -222,6 +225,38 @@ function AppContent() {
   }, [friendInvite]);
 
   useEffect(() => {
+    if (!supabase) {
+      setRecentChatsLoading(false);
+      setRecentChatsError("Список переписок появится после подключения Supabase.");
+      return;
+    }
+
+    let cancelled = false;
+    const refreshRecentChats = async () => {
+      try {
+        const items = await loadDirectConversationSummaries();
+        if (!cancelled) {
+          setRecentChats(items);
+          setRecentChatsError("");
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setRecentChatsError(error instanceof Error ? error.message : "Не удалось загрузить недавние чаты.");
+        }
+      } finally {
+        if (!cancelled) setRecentChatsLoading(false);
+      }
+    };
+
+    void refreshRecentChats();
+    const unsubscribe = subscribeToDirectMessageActivity(() => { void refreshRecentChats(); });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!directConversationId) return;
     return subscribeToDirectMessages(directConversationId, (incoming) => {
       setDirectMessages((current) => current.some((message) => message.id === incoming.id)
@@ -248,6 +283,7 @@ function AppContent() {
     try {
       const conversationId = await getOrCreateDirectConversation(user.id);
       if (requestId !== directOpenRequestRef.current) return;
+      void loadDirectConversationSummaries().then(setRecentChats).catch(() => undefined);
       setDirectConversationId(conversationId);
       const history = await loadDirectMessages(conversationId);
       if (requestId !== directOpenRequestRef.current) return;
@@ -286,6 +322,7 @@ function AppContent() {
       setDirectMessages((current) => current.some((message) => message.id === sent.id)
         ? current
         : [...current, sent].sort((a, b) => a.created_at.localeCompare(b.created_at)));
+      void loadDirectConversationSummaries().then(setRecentChats).catch(() => undefined);
       setDirectDraft("");
     } catch (error) {
       setDirectError(error instanceof Error ? error.message : "Не удалось отправить сообщение.");
@@ -350,6 +387,10 @@ function AppContent() {
 
 
   const isMobileChat = Boolean(selectedDirectUser);
+  const chatSearchTerm = friendInvite.trim().replace(/^@/, "").toLocaleLowerCase();
+  const visibleRecentChats = recentChats.filter((chat) =>
+    !chatSearchTerm || chat.display_name.toLocaleLowerCase().includes(chatSearchTerm) || chat.username.toLocaleLowerCase().includes(chatSearchTerm) || chat.last_message.toLocaleLowerCase().includes(chatSearchTerm),
+  );
   return (
     <main className="telegram-app">
       <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
@@ -373,19 +414,38 @@ function AppContent() {
               <span className="tg-chat-row-copy"><strong>{user.display_name}</strong><small>@{user.username}</small></span>
             </button>
           ))}
-          {!friendInvite.trim() && friends.map((friend) => (
-            <div className="tg-chat-row tg-contact-row" key={friend.id}>
-              <span className={`tg-avatar ${friend.color}`}>{friend.initials}</span>
-              <span className="tg-chat-row-copy"><strong>{friend.name}</strong><small>{friend.status}</small></span>
-            </div>
+          {!friendInvite.trim() && recentChatsLoading && <div className="tg-list-empty">Загружаем недавние переписки…</div>}
+          {!friendInvite.trim() && recentChatsError && recentChats.length === 0 && <div className="tg-list-empty tg-error">{recentChatsError}</div>}
+          {visibleRecentChats.map((chat) => (
+            <button
+              type="button"
+              key={chat.conversation_id}
+              className={`tg-chat-row ${selectedDirectUser?.id === chat.peer_id ? "tg-chat-row-active" : ""}`}
+              onClick={() => void openDirectChat({
+                id: chat.peer_id,
+                username: chat.username,
+                display_name: chat.display_name,
+                avatar_url: chat.avatar_url,
+              })}
+            >
+              <span className="tg-avatar">{chat.avatar_url ? <img src={chat.avatar_url} alt="" /> : (chat.display_name.trim()[0] || chat.username[0] || "U").toUpperCase()}</span>
+              <span className="tg-chat-row-copy">
+                <strong>{chat.display_name}</strong>
+                <small>{chat.last_message ? (chat.last_sender_id === currentUserId ? `Вы: ${chat.last_message}` : chat.last_message) : `@${chat.username}`}</small>
+              </span>
+              <time className="tg-chat-row-time">{chat.last_message_at ? new Date(chat.last_message_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}</time>
+            </button>
           ))}
+          {!friendInvite.trim() && !recentChatsLoading && !recentChatsError && recentChats.length === 0 && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь пока нет переписок.<br/><br/>Найди человека через поиск выше, чтобы начать общение. После первого сообщения чат появится здесь.</div>}
+          {chatSearchTerm.length > 0 && chatSearchTerm.length < 3 && visibleRecentChats.length === 0 && <div className="tg-list-empty">В недавних чатах совпадений нет. Введи ещё символы, чтобы найти пользователя.</div>}
+          {chatSearchTerm.length >= 3 && visibleRecentChats.length === 0 && userSearchResults.length === 0 && !userSearchLoading && !userSearchError && <div className="tg-list-empty">Ничего не найдено.</div>}
           {!userSearchLoading && !userSearchError && friendInvite.trim().length >= 3 && userSearchResults.length === 0 && <div className="tg-list-empty">Никого не нашли. Проверь имя пользователя.</div>}
-          {!friendInvite.trim() && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь будут твои переписки.<br/><br/>Введи имя пользователя в поиске выше, чтобы найти человека и начать чат.</div>}
         </div>
-        <nav className="tg-sidebar-bottom">
-          <button type="button" onClick={() => { setFriendInvite(""); setSelectedDirectUser(null); }}><MessageCircle size={19}/> Чаты</button>
-          <button type="button" onClick={() => setShowSettings(true)}><Settings size={19}/> Настройки</button>
-          <button type="button" onClick={() => setShowProfileEditor(true)}><UserRound size={19}/> Профиль</button>
+        <nav className="tg-sidebar-bottom" aria-label="Основная навигация">
+          <button type="button" className={!selectedDirectUser && activeTab === "chats" ? "tg-nav-active" : ""} onClick={() => { setFriendInvite(""); setSelectedDirectUser(null); setActiveTab("chats"); }}><MessageCircle size={21}/><span>Чаты</span></button>
+          <button type="button" className={activeTab === "friends" ? "tg-nav-active" : ""} onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); document.getElementById("tg-search")?.focus(); }}><UserRound size={21}/><span>Контакты</span></button>
+          <button type="button" onClick={() => setShowProfileEditor(true)}><UserRound size={21}/><span>Профиль</span></button>
+          <button type="button" onClick={() => setShowSettings(true)}><Settings size={21}/><span>Настройки</span></button>
         </nav>
       </aside>
 
@@ -393,7 +453,7 @@ function AppContent() {
         {selectedDirectUser ? <>
           <header className="tg-chat-header">
             <button className="tg-back" type="button" onClick={closeDirectChat} aria-label="Назад"><ArrowLeft size={21}/></button>
-            <span className="tg-avatar tg-header-avatar">{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</span>
+            <button className="tg-avatar tg-header-avatar" type="button" aria-label="Открыть профиль" onClick={() => setShowProfileEditor(true)}>{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</button>
             <div className="tg-peer"><strong>{selectedDirectUser.display_name}</strong><small>@{selectedDirectUser.username}</small></div>
             <button className="tg-header-action" type="button" title="Поиск" onClick={() => setFriendInvite(selectedDirectUser.username)}><Search size={20}/></button>
             <button className="tg-header-action" type="button" title="Ещё" onClick={() => setShowSettings(true)}><MoreHorizontal size={22}/></button>
@@ -407,7 +467,7 @@ function AppContent() {
                 const mine = message.sender_id === currentUserId;
                 return <article key={message.id} className={`tg-bubble ${mine ? "tg-bubble-out" : "tg-bubble-in"}`}>
                   <p>{message.body}</p>
-                  <time>{new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+                  <span className="tg-bubble-meta"><time>{new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>{mine && <span className="tg-message-checks" aria-label="Отправлено">✓✓</span>}</span>
                 </article>;
               })}
             </div>
