@@ -3,7 +3,7 @@ import AuthGate from "./components/AuthGate";
 import { supabase } from "./lib/supabase";
 import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
 import { getOrCreateDirectConversation, loadDirectMessages, loadDirectConversationSummaries, sendDirectMessage, subscribeToDirectMessages, subscribeToDirectMessageActivity, type DirectConversationSummary, type DirectMessage } from "./lib/directMessages";
-import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft } from "lucide-react";
+import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft, Camera, Pencil, QrCode, Music2, Gift, Archive } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
 type Channel = { id: number; serverId: number; name: string; message: string; time: string; initials: string; color: string; unread?: number };
@@ -35,6 +35,8 @@ function AppContent() {
   const [profileAbout, setProfileAbout] = useState(() => localStorage.getItem("bg-profile-about") || "Привет! Я пользуюсь BrainGram 👋");
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [profilePhone, setProfilePhone] = useState("");
+  const [profileSection, setProfileSection] = useState<"posts" | "archive" | "gifts">("posts");
   const [showProfileEditor, setShowProfileEditor] = useState(false);
   useEffect(() => {
     let cancelled = false;
@@ -63,6 +65,7 @@ function AppContent() {
         : "";
 
       setCurrentUserId(authData.user.id);
+      setProfilePhone(authData.user.phone || "");
       setProfileName(name);
       setProfileTag(username);
       setProfileStatus(status);
@@ -392,7 +395,7 @@ function AppContent() {
     !chatSearchTerm || chat.display_name.toLocaleLowerCase().includes(chatSearchTerm) || chat.username.toLocaleLowerCase().includes(chatSearchTerm) || chat.last_message.toLocaleLowerCase().includes(chatSearchTerm),
   );
   return (
-    <main className="telegram-app">
+    <main className={`telegram-app ${activeTab === "profile" ? "tg-profile-mode" : ""}`}>
       <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
         <header className="tg-sidebar-header">
           <button className="tg-menu-button" type="button" aria-label="Меню" onClick={() => setShowSettings(true)}>☰</button>
@@ -451,12 +454,38 @@ function AppContent() {
 
       <section className={`tg-conversation ${isMobileChat ? "tg-conversation-visible-mobile" : ""}`}>
         {activeTab === "profile" && !selectedDirectUser ? <div className="tg-profile-page">
-          <div className="tg-profile-card">
-            <button className="tg-profile-page-avatar" type="button" onClick={() => avatarInputRef.current?.click()} aria-label="Изменить фотографию профиля">
+          <div className="tg-profile-topbar">
+            <button type="button" aria-label="QR-код" onClick={() => window.alert("QR-код профиля скоро появится.")}><QrCode size={24}/></button>
+            <button type="button" aria-label="Дополнительно" onClick={() => setShowSettings(true)}><MoreHorizontal size={25}/></button>
+          </div>
+          <div className="tg-profile-hero">
+            <button className="tg-profile-page-avatar" type="button" onClick={() => avatarInputRef.current?.click()} aria-label="Выбрать фото профиля">
               {profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}
             </button>
             <input ref={avatarInputRef} className="tg-hidden-input" type="file" accept="image/*" onChange={handleProfileAvatarChange}/>
             <strong>{profileName}</strong>
+            <span className="tg-profile-status"><span className="tg-profile-online-dot"/> {profileStatus || "В сети"}</span>
+          </div>
+          <div className="tg-profile-actions">
+            <button type="button" onClick={() => avatarInputRef.current?.click()}><Camera size={25}/><span>Выбрать фото</span></button>
+            <button type="button" onClick={() => setShowProfileEditor(true)}><Pencil size={25}/><span>Изменить</span></button>
+            <button type="button" onClick={() => setShowSettings(true)}><Settings size={25}/><span>Настройки</span></button>
+          </div>
+          <div className="tg-profile-music"><Music2 size={18}/><span>Добавить музыку в профиль</span><span className="tg-profile-music-arrow">›</span></div>
+          <section className="tg-profile-info">
+            {profilePhone && <div className="tg-profile-info-row"><strong>{profilePhone}</strong><span>Телефон</span></div>}
+            <div className="tg-profile-info-row"><strong>@{profileTag}</strong><span>Имя пользователя</span></div>
+            <div className="tg-profile-info-row"><strong>{profileAbout || "Не указано"}</strong><span>О себе</span></div>
+          </section>
+          <div className="tg-profile-sections">
+            <button type="button" className={profileSection === "posts" ? "active" : ""} onClick={() => setProfileSection("posts")}>Публикации</button>
+            <button type="button" className={profileSection === "archive" ? "active" : ""} onClick={() => setProfileSection("archive")}><Archive size={16}/> Архив публикаций</button>
+            <button type="button" className={profileSection === "gifts" ? "active" : ""} onClick={() => setProfileSection("gifts")}><Gift size={16}/> Подарки</button>
+          </div>
+          <div className="tg-profile-feed">
+            <div className="tg-profile-feed-line"/>
+            <button type="button" className="tg-profile-add" onClick={() => window.alert("Публикации BrainGram скоро появятся.")}><Plus size={22}/><span>Добавить</span></button>
+            <p>{profileSection === "posts" ? "Пока нет публикаций" : profileSection === "archive" ? "Архив публикаций пуст" : "Подарков пока нет"}</p>
           </div>
         </div> : selectedDirectUser ? <>
           <header className="tg-chat-header">
@@ -506,8 +535,27 @@ function AppContent() {
           <h2 id="tg-profile-title">Мой профиль</h2>
           <button className="tg-profile-avatar" type="button" onClick={() => avatarInputRef.current?.click()}>{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</button>
           <input ref={avatarInputRef} className="tg-hidden-input" type="file" accept="image/*" onChange={handleProfileAvatarChange}/>
-          <strong>{profileName}</strong><span>@{profileTag}</span><p>{profileAbout}</p>
-          <button className="tg-primary" type="button" onClick={() => setShowProfileEditor(false)}>Готово</button>
+          <label className="tg-profile-edit-label">Имя</label>
+          <input className="tg-profile-edit-input" value={profileName} onChange={(event) => setProfileName(event.target.value)} maxLength={64}/>
+          <label className="tg-profile-edit-label">Имя пользователя</label>
+          <input className="tg-profile-edit-input" value={profileTag} onChange={(event) => setProfileTag(event.target.value.replace(/^@/, "").replace(/[^a-zA-Z0-9_]/g, ""))} maxLength={32}/>
+          <label className="tg-profile-edit-label">О себе</label>
+          <textarea className="tg-profile-edit-input" value={profileAbout} onChange={(event) => setProfileAbout(event.target.value)} maxLength={160}/>
+          <button className="tg-primary" type="button" onClick={async () => {
+            const name = profileName.trim();
+            const username = profileTag.trim().replace(/^@/, "");
+            if (!name || !username) { window.alert("Укажи имя и имя пользователя."); return; }
+            setProfileName(name); setProfileTag(username);
+            localStorage.setItem("bg-profile-name", name); localStorage.setItem("bg-profile-tag", username); localStorage.setItem("bg-profile-about", profileAbout);
+            if (supabase) {
+              const { data: authData } = await supabase.auth.getUser();
+              if (authData.user) {
+                const { error } = await supabase.from("profiles").update({ display_name: name, username, about: profileAbout, updated_at: new Date().toISOString() }).eq("id", authData.user.id);
+                if (error) { window.alert("Не удалось сохранить профиль: " + error.message); return; }
+              }
+            }
+            setShowProfileEditor(false);
+          }}>Сохранить</button>
         </section>
       </div>}
     </main>
