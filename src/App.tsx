@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import AuthGate from "./components/AuthGate";
 import { supabase } from "./lib/supabase";
 import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
-import { getOrCreateDirectConversation, loadDirectMessages, sendDirectMessage, subscribeToDirectMessages, type DirectMessage } from "./lib/directMessages";
+import { getOrCreateDirectConversation, loadDirectMessages, loadDirectConversationSummaries, sendDirectMessage, subscribeToDirectMessages, subscribeToDirectMessageActivity, type DirectConversationSummary, type DirectMessage } from "./lib/directMessages";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
@@ -165,6 +165,9 @@ function AppContent() {
   const [directLoading, setDirectLoading] = useState(false);
   const [directSending, setDirectSending] = useState(false);
   const [directError, setDirectError] = useState("");
+  const [recentChats, setRecentChats] = useState<DirectConversationSummary[]>([]);
+  const [recentChatsLoading, setRecentChatsLoading] = useState(true);
+  const [recentChatsError, setRecentChatsError] = useState("");
   const directOpenRequestRef = useRef(0);
   const [friendRequests, setFriendRequests] = useState<{ id: number; name: string; tag: string; initials: string; color: string; mutual: string }[]>([]);
   const [friends, setFriends] = useState<{ id: number; name: string; tag: string; initials: string; color: string; status: string }[]>([]);
@@ -220,6 +223,38 @@ function AppContent() {
       window.clearTimeout(timer);
     };
   }, [friendInvite]);
+
+  useEffect(() => {
+    if (!supabase) {
+      setRecentChatsLoading(false);
+      setRecentChatsError("Список переписок появится после подключения Supabase.");
+      return;
+    }
+
+    let cancelled = false;
+    const refreshRecentChats = async () => {
+      try {
+        const items = await loadDirectConversationSummaries();
+        if (!cancelled) {
+          setRecentChats(items);
+          setRecentChatsError("");
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setRecentChatsError(error instanceof Error ? error.message : "Не удалось загрузить недавние чаты.");
+        }
+      } finally {
+        if (!cancelled) setRecentChatsLoading(false);
+      }
+    };
+
+    void refreshRecentChats();
+    const unsubscribe = subscribeToDirectMessageActivity(() => { void refreshRecentChats(); });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (!directConversationId) return;
@@ -286,6 +321,7 @@ function AppContent() {
       setDirectMessages((current) => current.some((message) => message.id === sent.id)
         ? current
         : [...current, sent].sort((a, b) => a.created_at.localeCompare(b.created_at)));
+      void loadDirectConversationSummaries().then(setRecentChats).catch(() => undefined);
       setDirectDraft("");
     } catch (error) {
       setDirectError(error instanceof Error ? error.message : "Не удалось отправить сообщение.");
@@ -373,12 +409,29 @@ function AppContent() {
               <span className="tg-chat-row-copy"><strong>{user.display_name}</strong><small>@{user.username}</small></span>
             </button>
           ))}
-          {!friendInvite.trim() && friends.map((friend) => (
-            <div className="tg-chat-row tg-contact-row" key={friend.id}>
-              <span className={`tg-avatar ${friend.color}`}>{friend.initials}</span>
-              <span className="tg-chat-row-copy"><strong>{friend.name}</strong><small>{friend.status}</small></span>
-            </div>
+          {!friendInvite.trim() && recentChatsLoading && <div className="tg-list-empty">Загружаем недавние переписки…</div>}
+          {!friendInvite.trim() && recentChatsError && recentChats.length === 0 && <div className="tg-list-empty tg-error">{recentChatsError}</div>}
+          {!friendInvite.trim() && recentChats.map((chat) => (
+            <button
+              type="button"
+              key={chat.conversation_id}
+              className={`tg-chat-row ${selectedDirectUser?.id === chat.peer_id ? "tg-chat-row-active" : ""}`}
+              onClick={() => void openDirectChat({
+                id: chat.peer_id,
+                username: chat.username,
+                display_name: chat.display_name,
+                avatar_url: chat.avatar_url,
+              })}
+            >
+              <span className="tg-avatar">{chat.avatar_url ? <img src={chat.avatar_url} alt="" /> : (chat.display_name.trim()[0] || chat.username[0] || "U").toUpperCase()}</span>
+              <span className="tg-chat-row-copy">
+                <strong>{chat.display_name}</strong>
+                <small>{chat.last_message ? (chat.last_sender_id === currentUserId ? `Вы: ${chat.last_message}` : chat.last_message) : `@${chat.username}`}</small>
+              </span>
+              <time className="tg-chat-row-time">{chat.last_message_at ? new Date(chat.last_message_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}</time>
+            </button>
           ))}
+          {!friendInvite.trim() && !recentChatsLoading && !recentChatsError && recentChats.length === 0 && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь пока нет переписок.<br/><br/>Найди человека через поиск выше, чтобы начать общение. После первого сообщения чат появится здесь.</div>}
           {!userSearchLoading && !userSearchError && friendInvite.trim().length >= 3 && userSearchResults.length === 0 && <div className="tg-list-empty">Никого не нашли. Проверь имя пользователя.</div>}
           {!friendInvite.trim() && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь будут твои переписки.<br/><br/>Введи имя пользователя в поиске выше, чтобы найти человека и начать чат.</div>}
         </div>
