@@ -399,3 +399,46 @@ button{font:inherit;cursor:pointer}
   object-fit:cover;
   border-radius:inherit;
 }
+
+
+/* Real account discovery and direct-message screen */
+.user-discovery-form{margin-bottom:14px}
+.user-search-status{padding:12px 14px;color:#aeb4bf;font-size:12px}
+.user-search-error{color:#ff9298}
+.user-search-results{display:flex;flex-direction:column;gap:8px;margin:0 0 22px}
+.user-search-result{min-height:66px;display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #41434b;border-radius:11px;background:#2b2d31}
+.user-search-avatar,.direct-peer-avatar,.direct-message-avatar{width:40px;height:40px;flex:none;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#6878ff,#4534a5);color:#fff;font-size:15px;font-weight:800}
+.user-search-avatar img,.direct-peer-avatar img,.direct-message-avatar img{width:100%;height:100%;object-fit:cover}
+.user-search-result .friend-details{flex:1;min-width:0}
+.user-search-message{height:34px;padding:0 11px;border:0;border-radius:8px;background:#5865f2;color:white;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;white-space:nowrap}
+.user-search-message:hover{background:#4752c4}
+.direct-chat-header{justify-content:flex-start;gap:11px}
+.direct-back-button{width:34px;height:34px;border:0;border-radius:9px;background:transparent;color:#b5bac1;display:grid;place-items:center}
+.direct-back-button:hover{background:#393b42;color:#fff}
+.direct-peer-avatar{width:36px;height:36px}
+.direct-peer-meta{display:flex;flex-direction:column;gap:3px;min-width:0}
+.direct-peer-meta strong{font-size:13px;color:#f2f3f5}
+.direct-peer-meta span{font-size:10px;color:#949ba4}
+.direct-chat-content{padding:0 16px}
+.direct-chat-placeholder{flex:1;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:#949ba4}
+.direct-chat-placeholder strong{color:#f2f3f5;font-size:15px}
+.direct-chat-placeholder span{font-size:12px}
+.direct-chat-error{margin:16px;padding:12px;border:1px solid #9c4248;border-radius:9px;background:#542b30;color:#ffd4d6;font-size:12px}
+.direct-message-list{display:flex;flex-direction:column;gap:5px;padding:18px 0 20px;margin-top:auto}
+.direct-message{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:9px}
+.direct-message:hover{background:#2e3035}
+.direct-message-avatar{width:32px;height:32px;font-size:12px}
+.direct-message-body{min-width:0;flex:1}
+.direct-message-meta{display:flex;align-items:center;gap:8px}
+.direct-message-meta strong{font-size:12px;color:#f2f3f5}
+.direct-message-meta time{font-size:10px;color:#858b95}
+.direct-message-body p{margin:4px 0 0;color:#dbdee1;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.direct-message-composer{margin-top:0}
+.direct-message-composer input{padding:12px 4px}
+.direct-message-composer button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:650px){
+  .user-search-result{gap:8px;padding:9px}
+  .user-search-message{padding:0 8px;font-size:10px}
+  .direct-chat-content{padding:0 8px}
+  .direct-message-composer{margin:0 9px 12px}
+}
