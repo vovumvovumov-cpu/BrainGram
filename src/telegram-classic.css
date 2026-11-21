@@ -578,3 +578,28 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
     width:auto !important;
   }
 }
+
+/* Smaller profile action buttons */
+.tg-profile-actions{gap:8px}
+.tg-profile-actions button{
+  min-height:66px;
+  padding:7px 3px;
+  gap:5px;
+  border-radius:19px;
+  font-size:12px;
+}
+.tg-profile-actions button svg{width:22px;height:22px}
+@media(max-width:700px){
+  .tg-profile-mode .tg-profile-actions{gap:8px!important}
+  .tg-profile-mode .tg-profile-actions button{
+    min-height:66px!important;
+    height:66px!important;
+    padding:6px 2px!important;
+    gap:5px!important;
+    border-radius:19px!important;
+    font-size:12px!important;
+  }
+  .tg-profile-mode .tg-profile-actions button svg{
+    width:22px!important;height:22px!important;
+  }
+}
