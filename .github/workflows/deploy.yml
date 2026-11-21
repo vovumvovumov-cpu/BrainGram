@@ -1,4 +1,5 @@
 name: Deploy BrainGram to GitHub Pages
+# Production deployment for the browser-based BrainGram app.
 
 on:
   push:
