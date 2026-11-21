@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import AuthGate from "./components/AuthGate";
 import { supabase } from "./lib/supabase";
-import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server } from "lucide-react";
+import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
+import { getOrCreateDirectConversation, loadDirectMessages, sendDirectMessage, subscribeToDirectMessages, type DirectMessage } from "./lib/directMessages";
+import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
 type Channel = { id: number; serverId: number; name: string; message: string; time: string; initials: string; color: string; unread?: number };
@@ -60,6 +62,7 @@ function AppContent() {
         ? `${data.avatar_url}?v=${Date.now()}`
         : "";
 
+      setCurrentUserId(authData.user.id);
       setProfileName(name);
       setProfileTag(username);
       setProfileStatus(status);
@@ -151,7 +154,18 @@ function AppContent() {
   const [showSettings, setShowSettings] = useState(false);
   const [friendSearch, setFriendSearch] = useState("");
   const [friendInvite, setFriendInvite] = useState("");
-  const [friendMessage, setFriendMessage] = useState("");
+  const [userSearchResults, setUserSearchResults] = useState<UserSearchResult[]>([]);
+  const [userSearchLoading, setUserSearchLoading] = useState(false);
+  const [userSearchError, setUserSearchError] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [selectedDirectUser, setSelectedDirectUser] = useState<UserSearchResult | null>(null);
+  const [directConversationId, setDirectConversationId] = useState<string | null>(null);
+  const [directMessages, setDirectMessages] = useState<DirectMessage[]>([]);
+  const [directDraft, setDirectDraft] = useState("");
+  const [directLoading, setDirectLoading] = useState(false);
+  const [directSending, setDirectSending] = useState(false);
+  const [directError, setDirectError] = useState("");
+  const directOpenRequestRef = useRef(0);
   const [friendRequests, setFriendRequests] = useState<{ id: number; name: string; tag: string; initials: string; color: string; mutual: string }[]>([]);
   const [friends, setFriends] = useState<{ id: number; name: string; tag: string; initials: string; color: string; status: string }[]>([]);
   function acceptFriend(id: number) {
@@ -159,15 +173,6 @@ function AppContent() {
     if (!request) return;
     setFriends((current) => [...current, { id: request.id, name: request.name, tag: request.tag, initials: request.initials, color: request.color, status: "В сети" }]);
     setFriendRequests((current) => current.filter((item) => item.id !== id));
-  }
-  function sendFriendInvite(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const tag = friendInvite.trim().replace(/^@/, "");
-    if (!tag) return;
-    if (friends.some((friend) => friend.tag.toLowerCase() === `@${tag.toLowerCase()}`)) { setFriendMessage("Этот пользователь уже в друзьях."); return; }
-    if (friendRequests.some((request) => request.tag.toLowerCase() === `@${tag.toLowerCase()}`)) { setFriendMessage("Заявка от этого пользователя уже есть."); return; }
-    setFriendMessage("Поиск и отправка заявок станут доступны после подключения серверной части.");
-    setFriendInvite("");
   }
   const [notifications, setNotifications] = useState<{ id: number; type: string; title: string; text: string; time: string; unread: boolean; initials: string; color: string }[]>([]);
   const unreadNotifications = notifications.filter((item) => item.unread).length;
@@ -183,10 +188,111 @@ function AppContent() {
   useEffect(() => { localStorage.setItem("bg-servers", JSON.stringify(servers)); }, [servers]);
   useEffect(() => { localStorage.setItem("bg-channels", JSON.stringify(channels)); }, [channels]);
 
+  useEffect(() => {
+    const term = friendInvite.trim().replace(/^@/, "");
+    if (term.length < 3) {
+      setUserSearchResults([]);
+      setUserSearchLoading(false);
+      setUserSearchError("");
+      return;
+    }
+
+    let cancelled = false;
+    setUserSearchLoading(true);
+    setUserSearchError("");
+    const timer = window.setTimeout(() => {
+      void searchUsersByUsername(term)
+        .then((results) => {
+          if (!cancelled) setUserSearchResults(results);
+        })
+        .catch((error: unknown) => {
+          if (cancelled) return;
+          setUserSearchResults([]);
+          setUserSearchError(error instanceof Error ? error.message : "Не удалось выполнить поиск.");
+        })
+        .finally(() => {
+          if (!cancelled) setUserSearchLoading(false);
+        });
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [friendInvite]);
+
+  useEffect(() => {
+    if (!directConversationId) return;
+    return subscribeToDirectMessages(directConversationId, (incoming) => {
+      setDirectMessages((current) => current.some((message) => message.id === incoming.id)
+        ? current
+        : [...current, incoming].sort((a, b) => a.created_at.localeCompare(b.created_at)));
+    });
+  }, [directConversationId]);
+
   const activeServer = servers.find((server) => server.id === activeServerId) ?? servers[0];
   const serverChannels = useMemo(() => channels.filter((channel) => channel.serverId === activeServerId), [channels, activeServerId]);
   const visibleChannels = useMemo(() => serverChannels.filter((channel) => channel.name.toLowerCase().includes(query.toLowerCase())), [serverChannels, query]);
   const active = channels.find((channel) => channel.id === activeId) ?? serverChannels[0];
+
+  async function openDirectChat(user: UserSearchResult) {
+    const requestId = ++directOpenRequestRef.current;
+    setSelectedDirectUser(user);
+    setActiveTab("chats");
+    setDirectConversationId(null);
+    setDirectMessages([]);
+    setDirectDraft("");
+    setDirectError("");
+    setDirectLoading(true);
+
+    try {
+      const conversationId = await getOrCreateDirectConversation(user.id);
+      if (requestId !== directOpenRequestRef.current) return;
+      setDirectConversationId(conversationId);
+      const history = await loadDirectMessages(conversationId);
+      if (requestId !== directOpenRequestRef.current) return;
+      setDirectMessages((current) => {
+        const merged = new Map<string, DirectMessage>();
+        [...history, ...current].forEach((message) => merged.set(message.id, message));
+        return [...merged.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
+      });
+    } catch (error) {
+      if (requestId === directOpenRequestRef.current) {
+        setDirectError(error instanceof Error ? error.message : "Не удалось открыть переписку.");
+      }
+    } finally {
+      if (requestId === directOpenRequestRef.current) setDirectLoading(false);
+    }
+  }
+
+  function closeDirectChat() {
+    directOpenRequestRef.current += 1;
+    setSelectedDirectUser(null);
+    setDirectConversationId(null);
+    setDirectMessages([]);
+    setDirectDraft("");
+    setDirectError("");
+    setDirectLoading(false);
+    setActiveTab("friends");
+  }
+
+  async function submitDirectMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!directConversationId || !directDraft.trim() || directSending) return;
+    setDirectSending(true);
+    setDirectError("");
+    try {
+      const sent = await sendDirectMessage(directConversationId, directDraft);
+      setDirectMessages((current) => current.some((message) => message.id === sent.id)
+        ? current
+        : [...current, sent].sort((a, b) => a.created_at.localeCompare(b.created_at)));
+      setDirectDraft("");
+    } catch (error) {
+      setDirectError(error instanceof Error ? error.message : "Не удалось отправить сообщение.");
+    } finally {
+      setDirectSending(false);
+    }
+  }
 
   function selectServer(server: Server) {
     setActiveServerId(server.id);
@@ -251,14 +357,14 @@ function AppContent() {
         <div className="rail-divider"/>
         {servers.map((server) => <button key={server.id} className={`server-icon ${activeServerId === server.id ? "selected-server" : ""}`} title={server.name} onClick={() => selectServer(server)}><span className="server-letter">{server.letter}</span></button>)}
         <button className="server-icon add-server" title="Добавить сервер" onClick={createServer}><Plus size={23}/></button>
-        <button className="server-icon explore-server" title="Обзор"><Compass size={21}/></button>
+        <button className="server-icon explore-server" title="Найти пользователей" onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); }}><Compass size={21}/></button>
         <div className="server-bottom"><button className="server-icon"><Inbox size={20}/></button></div>
       </aside>
 
       <aside className="channel-sidebar">
         <button className="server-title">{activeServer.name} <ChevronDown size={17}/></button>
         <div className="channel-scroll">
-          <div className="quick-actions"><button><Bell size={17}/> Уведомления</button><button><Pin size={17}/> Закреплённое</button></div>
+          <div className="quick-actions"><button onClick={() => setActiveTab("notifications")}><Bell size={17}/> Уведомления</button><button onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); }}><Users size={17}/> Найти людей</button></div>
           <div className="channel-heading"><span>ТЕКСТОВЫЕ КАНАЛЫ</span><button onClick={createChannel} title="Создать канал"><Plus size={17}/></button></div>
           <nav className="channel-list">
             {visibleChannels.map((channel) => <div key={channel.id} className={`channel-row ${activeId === channel.id ? "active-channel-row" : ""}`}><button className={`channel-item ${activeId === channel.id ? "active-channel" : ""}`} onClick={() => setActiveId(channel.id)}><Hash size={18}/><span>{channel.name}</span>{channel.unread ? <b>{channel.unread}</b> : null}</button><button className="delete-channel" title="Удалить канал" onClick={() => deleteChannel(channel)}><Trash2 size={14}/></button></div>)}
@@ -288,7 +394,18 @@ function AppContent() {
         <div className="friends-topbar"><div><Users size={20}/><strong>Друзья</strong></div><span>{friends.length} друзей</span></div>
         <div className="friends-content">
           <div className="friends-hero"><div><h1>Твои друзья</h1><p>Общайся и оставайся на связи в BrainGram</p></div><div className="friends-hero-icon"><Users size={27}/></div></div>
-          <form className="friend-add-form" onSubmit={sendFriendInvite}><div className="friend-add-copy"><strong>Добавить друга</strong><span>Введи его имя пользователя</span></div><div className="friend-add-controls"><div><span>@</span><input value={friendInvite} onChange={(event) => { setFriendInvite(event.target.value); setFriendMessage(""); }} placeholder="username" maxLength={24}/></div><button type="submit" disabled={!friendInvite.trim()}><Plus size={16}/> Добавить</button></div>{friendMessage && <p className="friend-feedback">{friendMessage}</p>}</form>
+          <form className="friend-add-form user-discovery-form" onSubmit={(event) => event.preventDefault()}>
+            <div className="friend-add-copy"><strong>Найти пользователя</strong><span>Введи @username — минимум 3 символа</span></div>
+            <div className="friend-add-controls"><div><span>@</span><input value={friendInvite} onChange={(event) => setFriendInvite(event.target.value)} placeholder="username" maxLength={21} autoComplete="off"/></div><button type="submit" disabled={friendInvite.trim().replace(/^@/, "").length < 3}><Search size={16}/> Найти</button></div>
+          </form>
+          {userSearchLoading && <div className="user-search-status">Ищем пользователей…</div>}
+          {userSearchError && <div className="user-search-status user-search-error">{userSearchError}</div>}
+          {!userSearchLoading && !userSearchError && friendInvite.trim().replace(/^@/, "").length >= 3 && userSearchResults.length === 0 && <div className="friends-empty-small">Пользователи не найдены.</div>}
+          {userSearchResults.length > 0 && <div className="user-search-results">{userSearchResults.map((user) => <article className="user-search-result" key={user.id}>
+            <div className="user-search-avatar">{user.avatar_url ? <img src={user.avatar_url} alt=""/> : (user.display_name.trim()[0] || user.username[0] || "U").toUpperCase()}</div>
+            <div className="friend-details"><strong>{user.display_name}</strong><span>@{user.username}</span></div>
+            <button className="user-search-message" type="button" onClick={() => void openDirectChat(user)}><MessageCircle size={15}/> Написать</button>
+          </article>)}</div>}
           <div className="friend-section-heading"><div><h2>Заявки в друзья</h2><span>{friendRequests.length}</span></div></div>
           {friendRequests.length > 0 ? <div className="friend-request-list">{friendRequests.map((friend) => <article className="friend-card request-card" key={friend.id}><div className={`friend-avatar ${friend.color}`}>{friend.initials}</div><div className="friend-details"><strong>{friend.name}</strong><span>{friend.tag} · {friend.mutual}</span></div><div className="friend-card-actions"><button className="friend-accept" onClick={() => acceptFriend(friend.id)} title="Принять заявку"><Users size={15}/></button><button className="friend-decline" onClick={() => setFriendRequests((current) => current.filter((item) => item.id !== friend.id))} title="Отклонить заявку">×</button></div></article>)}</div> : <div className="friends-empty-small">Новых заявок пока нет.</div>}
           <div className="friend-section-heading friends-list-heading"><div><h2>Все друзья</h2><span>{friends.length}</span></div><div className="friend-search"><Search size={15}/><input value={friendSearch} onChange={(event) => setFriendSearch(event.target.value)} placeholder="Поиск друзей"/></div></div>
@@ -317,12 +434,36 @@ function AppContent() {
            <h1>{profileName || "Пользователь"}</h1>
          </div>
        </section> : <section className="chat-panel">
+        {selectedDirectUser ? <>
+          <header className="chat-header direct-chat-header">
+            <button className="direct-back-button" type="button" onClick={closeDirectChat} aria-label="Назад к поиску"><ArrowLeft size={19}/></button>
+            <div className="direct-peer-avatar">{selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase()}</div>
+            <div className="direct-peer-meta"><strong>{selectedDirectUser.display_name}</strong><span>@{selectedDirectUser.username}</span></div>
+          </header>
+          <div className="chat-content direct-chat-content">
+            {directLoading && <div className="direct-chat-placeholder">Открываем переписку…</div>}
+            {directError && <div className="direct-chat-error">{directError}</div>}
+            {!directLoading && !directError && directMessages.length === 0 && <div className="direct-chat-placeholder"><MessageCircle size={34}/><strong>Это начало переписки</strong><span>Отправь первое сообщение пользователю @{selectedDirectUser.username}</span></div>}
+            <div className="direct-message-list">{directMessages.map((message) => {
+              const mine = message.sender_id === currentUserId;
+              return <article key={message.id} className={mine ? "direct-message mine" : "direct-message"}>
+                <div className="direct-message-avatar">{mine ? (profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName.trim()[0] || "U").toUpperCase()) : (selectedDirectUser.avatar_url ? <img src={selectedDirectUser.avatar_url} alt=""/> : (selectedDirectUser.display_name.trim()[0] || "U").toUpperCase())}</div>
+                <div className="direct-message-body"><div className="direct-message-meta"><strong>{mine ? profileName : selectedDirectUser.display_name}</strong><time>{new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time></div><p>{message.body}</p></div>
+              </article>;
+            })}</div>
+          </div>
+          <form className="message-composer direct-message-composer" onSubmit={submitDirectMessage}>
+            <input value={directDraft} onChange={(event) => setDirectDraft(event.target.value)} placeholder={directConversationId ? "Написать личное сообщение…" : "Подключаем переписку…"} maxLength={4000} disabled={!directConversationId || directLoading || directSending}/>
+            <button className="send-message" type="submit" title="Отправить" disabled={!directDraft.trim() || !directConversationId || directSending}><Send size={18}/></button>
+          </form>
+        </> : <>
         <header className="chat-header"><div className="header-channel"><Hash size={23}/><strong>{active.name}</strong></div><div className="header-tools"><button title="Уведомления"><Bell/></button><button title="Закреплённое"><Pin/></button><button title="Участники"><Users/></button><div className="header-search"><Search size={16}/><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Поиск каналов"/></div><button title="Входящие"><Inbox/></button><button title="Справка"><MessageCircle/></button></div></header>
         <div className="chat-content">
           <div className="channel-welcome"><div className="hash-welcome"><Hash size={34}/></div><h1>Добро пожаловать в #{active.name}!</h1><p>Это начало канала #{active.name}.</p></div>
           <div className="message-list">{(messages[active.id] ?? []).map((message, index) => <article key={index} className="message-entry"><div className={`message-avatar ${index % 2 ? "avatar-blue" : "avatar-purple"}`}>{index % 2 ? "M" : "U"}</div><div className="message-body"><div className="message-author">{profileName} <time>Сегодня</time></div><p>{message}</p></div></article>)}</div>
         </div>
         <form className="message-composer" onSubmit={(e) => { e.preventDefault(); sendMessage(); }}><button type="button" title="Прикрепить файл"><Plus size={21}/></button><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Написать в #${active.name}`}/><button type="button" title="Прикрепить файл"><Paperclip size={19}/></button><button type="button" title="Эмодзи"><Smile size={20}/></button><button className="send-message" type="submit" title="Отправить"><Send size={18}/></button></form>
+        </>}
       </section>}
       <aside className="member-sidebar"><div className="member-title">УЧАСТНИКИ — 1</div><div className="member-group">В СЕТИ — 1</div><div className="member"><div className="member-avatar purple">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName.trim()[0] || "U").toUpperCase()}<i/></div><span>{profileName}</span><b>👑</b></div></aside>
       <button type="button" className="bottom-nav user-name-bar" aria-label="Открыть профиль" onClick={() => setActiveTab("profile")}><span>@{profileTag || "user"}</span></button>
