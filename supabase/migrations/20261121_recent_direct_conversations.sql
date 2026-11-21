@@ -20,7 +20,7 @@ as $function$
   select
     c.id as conversation_id,
     p.id as peer_id,
-    p.username,
+    coalesce(p.username, 'user') as username,
     coalesce(nullif(p.display_name, ''), p.username, 'Пользователь') as display_name,
     p.avatar_url,
     coalesce(m.body, '') as last_message,
