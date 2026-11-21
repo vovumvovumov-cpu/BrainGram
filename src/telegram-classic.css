@@ -202,3 +202,22 @@
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 }
+
+/* Recent conversation metadata in the classic chat list */
+.tg-chat-row-time {
+  flex: none;
+  align-self: flex-start;
+  padding-top: 4px;
+  color: #91a0aa;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.tg-chat-row-copy small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .tg-chat-row-time { font-size: 10px; }
+}
