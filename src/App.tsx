@@ -442,10 +442,10 @@ function AppContent() {
           {!userSearchLoading && !userSearchError && friendInvite.trim().length >= 3 && userSearchResults.length === 0 && <div className="tg-list-empty">Никого не нашли. Проверь имя пользователя.</div>}
         </div>
         <nav className="tg-sidebar-bottom" aria-label="Основная навигация">
-          <button type="button" className={!selectedDirectUser && activeTab === "chats" ? "tg-nav-active" : ""} onClick={() => { setFriendInvite(""); setSelectedDirectUser(null); setActiveTab("chats"); }}><MessageCircle size={21}/><span>Чаты</span></button>
-          <button type="button" className={activeTab === "friends" ? "tg-nav-active" : ""} onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); document.getElementById("tg-search")?.focus(); }}><UserRound size={21}/><span>Контакты</span></button>
-          <button type="button" onClick={() => setShowProfileEditor(true)}><UserRound size={21}/><span>Профиль</span></button>
-          <button type="button" onClick={() => setShowSettings(true)}><Settings size={21}/><span>Настройки</span></button>
+          <button type="button" className={!selectedDirectUser && activeTab === "chats" ? "tg-nav-active" : ""} onClick={() => { setFriendInvite(""); setSelectedDirectUser(null); setActiveTab("chats"); }}><MessageCircle size={34} strokeWidth={1.9}/><span>Чаты</span></button>
+          <button type="button" className={activeTab === "friends" ? "tg-nav-active" : ""} onClick={() => { setSelectedDirectUser(null); setActiveTab("friends"); document.getElementById("tg-search")?.focus(); }}><UserRound size={34} strokeWidth={1.9}/><span>Контакты</span></button>
+          <button type="button" className={showSettings ? "tg-nav-active" : ""} onClick={() => setShowSettings(true)}><Settings size={34} strokeWidth={1.9}/><span>Настройки</span></button>
+          <button type="button" onClick={() => setShowProfileEditor(true)}><span className="tg-nav-profile-avatar">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</span><span>Профиль</span></button>
         </nav>
       </aside>
 
