@@ -434,7 +434,6 @@ function AppContent() {
           ))}
           {!friendInvite.trim() && !recentChatsLoading && !recentChatsError && recentChats.length === 0 && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь пока нет переписок.<br/><br/>Найди человека через поиск выше, чтобы начать общение. После первого сообщения чат появится здесь.</div>}
           {!userSearchLoading && !userSearchError && friendInvite.trim().length >= 3 && userSearchResults.length === 0 && <div className="tg-list-empty">Никого не нашли. Проверь имя пользователя.</div>}
-          {!friendInvite.trim() && friends.length === 0 && <div className="tg-list-empty tg-list-hint">Здесь будут твои переписки.<br/><br/>Введи имя пользователя в поиске выше, чтобы найти человека и начать чат.</div>}
         </div>
         <nav className="tg-sidebar-bottom">
           <button type="button" onClick={() => { setFriendInvite(""); setSelectedDirectUser(null); }}><MessageCircle size={19}/> Чаты</button>
