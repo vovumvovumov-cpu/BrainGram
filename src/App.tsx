@@ -3,7 +3,7 @@ import AuthGate from "./components/AuthGate";
 import { supabase } from "./lib/supabase";
 import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
 import { getOrCreateDirectConversation, loadDirectMessages, loadDirectConversationSummaries, sendDirectMessage, subscribeToDirectMessages, subscribeToDirectMessageActivity, type DirectConversationSummary, type DirectMessage } from "./lib/directMessages";
-import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft, Camera, Pencil, QrCode, Music2, Gift, Archive } from "lucide-react";
+import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft, Camera, Pencil, QrCode, Music2, Gift, Archive, KeyRound, Volume2, Database, Folder, Laptop, BatteryCharging, Globe2, Star, Store, HelpCircle, Lightbulb, ShieldCheck } from "lucide-react";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
 type Channel = { id: number; serverId: number; name: string; message: string; time: string; initials: string; color: string; unread?: number };
@@ -453,7 +453,42 @@ function AppContent() {
       </aside>
 
       <section className={`tg-conversation ${isMobileChat ? "tg-conversation-visible-mobile" : ""}`}>
-        {activeTab === "profile" && !selectedDirectUser ? <div className="tg-profile-page">
+        {showSettings && !selectedDirectUser ? <div className="tg-settings-page">
+          <div className="tg-settings-topbar">
+            <button type="button" aria-label="QR-код" onClick={() => window.alert("QR-код BrainGram скоро появится.")}><QrCode size={24}/></button>
+            <strong>Настройки</strong>
+            <div><button type="button" aria-label="Поиск настроек" onClick={() => window.alert("Поиск по настройкам скоро появится.")}><Search size={24}/></button><button type="button" aria-label="Дополнительно" onClick={() => window.alert("Дополнительные действия скоро появятся.")}><MoreHorizontal size={25}/></button></div>
+          </div>
+          <div className="tg-settings-hero">
+            <button className="tg-settings-avatar" type="button" onClick={() => avatarInputRef.current?.click()}>{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}<span><Camera size={20}/></span></button>
+            <strong>{profileName}</strong><small>{profilePhone || "Номер не указан"} · @{profileTag}</small>
+          </div>
+          <div className="tg-settings-card">
+            <button className="tg-settings-row" type="button" onClick={() => { setShowSettings(false); setShowProfileEditor(true); }}><span className="tg-settings-icon blue"><UserRound/></span><span><strong>Аккаунт</strong><small>Номер, имя пользователя, «О себе»</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Настройки чатов скоро появятся.")}><span className="tg-settings-icon orange"><MessageCircle/></span><span><strong>Настройки чатов</strong><small>Обои, ночной режим, анимации</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Настройки конфиденциальности скоро появятся.")}><span className="tg-settings-icon green"><KeyRound/></span><span><strong>Конфиденциальность</strong><small>Время захода, устройства, ключи доступа</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Настройки уведомлений скоро появятся.")}><span className="tg-settings-icon red"><Volume2/></span><span><strong>Уведомления</strong><small>Звуки, звонки, счётчик сообщений</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Настройки данных и памяти скоро появятся.")}><span className="tg-settings-icon indigo"><Database/></span><span><strong>Данные и память</strong><small>Настройки загрузки медиафайлов</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Папки чатов скоро появятся.")}><span className="tg-settings-icon cyan"><Folder/></span><span><strong>Папки с чатами</strong><small>Сортировка чатов по папкам</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Управление устройствами скоро появится.")}><span className="tg-settings-icon teal"><Laptop/></span><span><strong>Устройства</strong><small>Управление активными сеансами</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Энергосбережение скоро появится.")}><span className="tg-settings-icon amber"><BatteryCharging/></span><span><strong>Энергосбережение</strong><small>Экономия энергии при низком заряде</small></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Выбран русский язык.")}><span className="tg-settings-icon purple"><Globe2/></span><span><strong>Язык</strong><small>Русский</small></span></button>
+          </div>
+          <div className="tg-settings-card tg-settings-extra">
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("BrainGram Premium скоро появится.")}><span className="tg-settings-icon violet"><Star/></span><span><strong>BrainGram Premium</strong></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Звёзды BrainGram скоро появятся.")}><span className="tg-settings-icon amber"><Star/></span><span><strong>Звёзды BrainGram</strong></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("BrainGram для бизнеса скоро появится.")}><span className="tg-settings-icon red"><Store/></span><span><strong>BrainGram для бизнеса</strong></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Подарки BrainGram скоро появятся.")}><span className="tg-settings-icon orange"><Gift/></span><span><strong>Отправить подарок</strong></span></button>
+          </div>
+          <div className="tg-settings-card tg-settings-help">
+            <h3>Помощь</h3>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Поддержка BrainGram скоро появится.")}><span className="tg-settings-icon orange"><MessageCircle/></span><span><strong>Задать вопрос</strong></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Справка BrainGram скоро появится.")}><span className="tg-settings-icon blue"><HelpCircle/></span><span><strong>Вопросы о BrainGram</strong></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Возможности BrainGram скоро появятся.")}><span className="tg-settings-icon purple"><Lightbulb/></span><span><strong>Возможности BrainGram</strong></span></button>
+            <button className="tg-settings-row" type="button" onClick={() => window.alert("Политика конфиденциальности скоро появится.")}><span className="tg-settings-icon green"><ShieldCheck/></span><span><strong>Политика конфиденциальности</strong></span></button>
+          </div>
+          <p className="tg-settings-version">BrainGram для Android · веб-версия</p>
+        </div> : activeTab === "profile" && !selectedDirectUser ? <div className="tg-profile-page">
           <div className="tg-profile-topbar">
             <button type="button" aria-label="QR-код" onClick={() => window.alert("QR-код профиля скоро появится.")}><QrCode size={24}/></button>
             <button type="button" aria-label="Дополнительно" onClick={() => setShowSettings(true)}><MoreHorizontal size={25}/></button>
