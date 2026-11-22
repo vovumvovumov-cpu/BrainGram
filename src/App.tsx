@@ -395,7 +395,7 @@ function AppContent() {
     !chatSearchTerm || chat.display_name.toLocaleLowerCase().includes(chatSearchTerm) || chat.username.toLocaleLowerCase().includes(chatSearchTerm) || chat.last_message.toLocaleLowerCase().includes(chatSearchTerm),
   );
   return (
-    <main className={`telegram-app ${activeTab === "profile" ? "tg-profile-mode" : ""}`}>
+    <main className={`telegram-app ${activeTab === "profile" ? "tg-profile-mode" : ""} ${showSettings ? "tg-settings-mode" : ""}`}>
       <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
         <header className="tg-sidebar-header">
           <button className="tg-menu-button" type="button" aria-label="Меню" onClick={() => setShowSettings(true)}>☰</button>
