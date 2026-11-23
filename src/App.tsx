@@ -4,6 +4,7 @@ import { supabase } from "./lib/supabase";
 import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
 import { getOrCreateDirectConversation, loadDirectMessages, loadDirectConversationSummaries, sendDirectMessage, subscribeToDirectMessages, subscribeToDirectMessageActivity, type DirectConversationSummary, type DirectMessage } from "./lib/directMessages";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft, Camera, Pencil, QrCode, Music2, Gift, Archive } from "lucide-react";
+import NftGifts from "./components/NftGifts";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
 type Channel = { id: number; serverId: number; name: string; message: string; time: string; initials: string; color: string; unread?: number };
