@@ -156,6 +156,16 @@ function AppContent() {
     reader.readAsDataURL(file);
   }
   const [showSettings, setShowSettings] = useState(false);
+  const [settingsSection, setSettingsSection] = useState("main");
+  const [businessMode, setBusinessMode] = useState(() => localStorage.getItem("bg-business-mode") === "true");
+  const [businessHours, setBusinessHours] = useState(() => localStorage.getItem("bg-business-hours") || "Пн–Пт, 09:00–18:00");
+  const [businessAddress, setBusinessAddress] = useState(() => localStorage.getItem("bg-business-address") || "");
+  const [businessGreeting, setBusinessGreeting] = useState(() => localStorage.getItem("bg-business-greeting") || "Здравствуйте! Спасибо за сообщение. Мы скоро ответим.");
+  const [privacyOnline, setPrivacyOnline] = useState(() => localStorage.getItem("bg-privacy-online") !== "false");
+  const [privacyPhone, setPrivacyPhone] = useState(() => localStorage.getItem("bg-privacy-phone") || "Контакты");
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => localStorage.getItem("bg-notifications") !== "false");
+  const [language, setLanguage] = useState(() => localStorage.getItem("bg-language") || "Русский");
+  const [twoStepEnabled, setTwoStepEnabled] = useState(() => localStorage.getItem("bg-two-step") === "true");
   const [friendSearch, setFriendSearch] = useState("");
   const [friendInvite, setFriendInvite] = useState("");
   const [userSearchResults, setUserSearchResults] = useState<UserSearchResult[]>([]);
@@ -572,13 +582,74 @@ function AppContent() {
         </div>}
       </section>
 
-      {showSettings && <div className="tg-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowSettings(false); }}>
-        <section className="tg-modal" role="dialog" aria-modal="true" aria-labelledby="tg-settings-title">
-          <button className="tg-modal-close" type="button" onClick={() => setShowSettings(false)}>×</button>
-          <h2 id="tg-settings-title">Настройки</h2>
-          <div className="tg-settings-user"><span className="tg-avatar">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</span><div><strong>{profileName}</strong><small>@{profileTag}</small></div></div>
-          <p>Статус: {profileStatus}</p><p>{profileAbout}</p>
-          <button className="tg-primary" type="button" onClick={() => { setShowSettings(false); setShowProfileEditor(true); }}>Изменить профиль</button>
+      {showSettings && <div className="tg-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) { setShowSettings(false); setSettingsSection("main"); } }}>
+        <section className="tg-modal tg-settings-suite" role="dialog" aria-modal="true" aria-labelledby="tg-settings-title">
+          <button className="tg-modal-close" type="button" onClick={() => { setShowSettings(false); setSettingsSection("main"); }}>×</button>
+          {settingsSection !== "main" && <button className="tg-settings-back" type="button" onClick={() => setSettingsSection("main")}>← Настройки</button>}
+          {settingsSection === "main" ? <>
+            <h2 id="tg-settings-title">Настройки</h2>
+            <div className="tg-settings-user"><span className="tg-avatar">{profileAvatar ? <img src={profileAvatar} alt=""/> : (profileName[0] || "U").toUpperCase()}</span><div><strong>{profileName}</strong><small>@{profileTag}</small></div><button type="button" onClick={() => { setShowSettings(false); setShowProfileEditor(true); }}>Изменить</button></div>
+            <div className="tg-settings-group">
+              <button type="button" onClick={() => setSettingsSection("account")}><b>👤 Аккаунт</b><small>Номер телефона, имя пользователя, безопасность</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("privacy")}><b>🔒 Конфиденциальность</b><small>Последняя активность, номер, блокировки</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("notifications")}><b>🔔 Уведомления и звуки</b><small>Сообщения и оповещения</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("chats")}><b>💬 Настройки чатов</b><small>Оформление и поведение переписок</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("devices")}><b>📱 Устройства</b><small>Активные сеансы и подключение по QR</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("language")}><b>🌐 Язык</b><small>{language}</small><span>›</span></button>
+            </div>
+            <div className="tg-settings-group">
+              <button type="button" onClick={() => setSettingsSection("premium")}><b>💎 MechaGram Premium</b><small>Дополнительные возможности</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("wallet")}><b>🟣 MechaGram для бизнеса</b><small>Бизнес-профиль, быстрые ответы, приветствие</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("business")}><b>🏪 Бизнес-инструменты</b><small>Адрес, часы работы, чат-боты</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("stars")}><b>⭐ Звёзды и подарки</b><small>Подарки и цифровые предметы</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("gram")}><b>💠 Баланс GRAM</b><small>Кошелёк и операции</small><span>›</span></button>
+            </div>
+          </> : settingsSection === "account" ? <>
+            <h2>Аккаунт</h2><div className="tg-settings-info"><b>{profileName}</b><span>@{profileTag}</span><span>{profilePhone || "Телефон не указан"}</span></div>
+            <button className="tg-settings-action" onClick={() => { setShowSettings(false); setShowProfileEditor(true); }}>Изменить профиль</button>
+            <label className="tg-settings-field">Двухэтапная проверка <input type="checkbox" checked={twoStepEnabled} onChange={e => {setTwoStepEnabled(e.target.checked);localStorage.setItem("bg-two-step",String(e.target.checked));}}/></label>
+            <p className="tg-settings-note">Это локальный переключатель интерфейса. Настоящая двухэтапная проверка пока не подключена.</p>
+          </> : settingsSection === "privacy" ? <>
+            <h2>Конфиденциальность</h2>
+            <label className="tg-settings-field">Показывать статус «В сети» <input type="checkbox" checked={privacyOnline} onChange={e => {setPrivacyOnline(e.target.checked);localStorage.setItem("bg-privacy-online",String(e.target.checked));}}/></label>
+            <label className="tg-settings-field">Кто видит мой номер <select value={privacyPhone} onChange={e => {setPrivacyPhone(e.target.value);localStorage.setItem("bg-privacy-phone",e.target.value);}}><option>Все</option><option>Контакты</option><option>Никто</option></select></label>
+            <div className="tg-settings-info"><b>Заблокированные пользователи</b><span>Список пока пуст</span></div>
+          </> : settingsSection === "notifications" ? <>
+            <h2>Уведомления и звуки</h2>
+            <label className="tg-settings-field">Уведомления <input type="checkbox" checked={notificationsEnabled} onChange={e => {setNotificationsEnabled(e.target.checked);localStorage.setItem("bg-notifications",String(e.target.checked));}}/></label>
+            <div className="tg-settings-info"><b>Личные чаты</b><span>Звук: стандартный</span><span>Предпросмотр сообщений: включён</span></div>
+          </> : settingsSection === "chats" ? <>
+            <h2>Настройки чатов</h2>
+            <div className="tg-settings-info"><b>Оформление</b><span>Светлая тема BrainGram</span><span>Размер текста: стандартный</span><span>Фон чатов: классический</span></div>
+            <p className="tg-settings-note">Дополнительные темы и параметры оформления добавим отдельно.</p>
+          </> : settingsSection === "devices" ? <>
+            <h2>Устройства</h2><div className="tg-device-qr"><QrCode size={104}/><b>Подключить устройство</b><span>Открой BrainGram на другом устройстве и отсканируй QR-код, когда синхронизация устройств будет подключена.</span></div>
+            <div className="tg-settings-info"><b>Это устройство</b><span>Текущая веб-сессия</span></div>
+          </> : settingsSection === "language" ? <>
+            <h2>Язык приложения</h2>
+            {["Русский","English","Français","Deutsch","Español"].map(item => <label className="tg-settings-choice" key={item}><input type="radio" name="bg-language" checked={language===item} onChange={()=>{setLanguage(item);localStorage.setItem("bg-language",item);}}/>{item}</label>)}
+            <p className="tg-settings-note">Выбор сохраняется, но перевод всех экранов пока не подключён.</p>
+          </> : settingsSection === "premium" ? <>
+            <div className="tg-premium-hero"><div>💎</div><h2>MechaGram Premium</h2><p>Больше возможностей для общения и персонализации</p></div>
+            <div className="tg-settings-info"><b>Возможности</b><span>Уникальные значки профиля</span><span>Расширенные лимиты</span><span>Дополнительные реакции и оформление</span></div>
+            <button className="tg-settings-action" onClick={()=>window.alert("Оплата Premium пока не подключена.")}>Посмотреть подписку</button>
+          </> : settingsSection === "business" ? <>
+            <h2>Бизнес-профиль</h2>
+            <label className="tg-settings-field">Режим бизнеса <input type="checkbox" checked={businessMode} onChange={e=>{setBusinessMode(e.target.checked);localStorage.setItem("bg-business-mode",String(e.target.checked));}}/></label>
+            <label className="tg-settings-field vertical">Адрес<input value={businessAddress} onChange={e=>{setBusinessAddress(e.target.value);localStorage.setItem("bg-business-address",e.target.value);}} placeholder="Адрес компании"/></label>
+            <label className="tg-settings-field vertical">Часы работы<input value={businessHours} onChange={e=>{setBusinessHours(e.target.value);localStorage.setItem("bg-business-hours",e.target.value);}}/></label>
+            <label className="tg-settings-field vertical">Приветственное сообщение<textarea value={businessGreeting} onChange={e=>{setBusinessGreeting(e.target.value);localStorage.setItem("bg-business-greeting",e.target.value);}} rows={3}/></label>
+            <div className="tg-settings-info"><b>Быстрые ответы</b><span>Добавление и отправка шаблонов — следующий этап</span><b>Чат-боты</b><span>Подключение ботов пока не настроено</span></div>
+          </> : settingsSection === "stars" ? <>
+            <div className="tg-premium-hero"><div>⭐</div><h2>Звёзды и подарки</h2><p>Цифровые подарки и коллекционные предметы</p></div>
+            <button className="tg-settings-action" onClick={()=>{setShowSettings(false);setSettingsSection("main");setActiveTab("profile");setProfileSection("gifts");}}>Открыть мои подарки</button>
+            <div className="tg-settings-info"><b>NFT-подарки</b><span>Подключение TON-кошелька доступно в разделе «Подарки» профиля.</span></div>
+          </> : settingsSection === "gram" ? <>
+            <div className="tg-premium-hero gram"><div>💠</div><h2>Баланс GRAM</h2><p>Кошелёк MechaGram</p></div>
+            <div className="tg-gram-balance"><small>Доступный баланс</small><strong>0 GRAM</strong><span>Демо-интерфейс · реальный токен и операции не подключены</span></div>
+            <button className="tg-settings-action" onClick={()=>window.alert("Пополнение GRAM станет доступно после интеграции кошелька и проверки сети.")}>Пополнить баланс</button>
+            <div className="tg-settings-info"><b>История операций</b><span>Операций пока нет</span></div>
+          </> : <><h2>MechaGram для бизнеса</h2><p>Бизнес-инструменты</p></>}
         </section>
       </div>}
       {showProfileEditor && <div className="tg-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowProfileEditor(false); }}>
