@@ -404,7 +404,7 @@ function AppContent() {
       ? left.display_name.localeCompare(right.display_name, "ru")
       : (right.last_message_at || "").localeCompare(left.last_message_at || ""));
   return (
-    <main className={`telegram-app ${activeTab === "profile" ? "tg-profile-mode" : ""}`}>
+    <main className={`telegram-app ${activeTab === "profile" ? "tg-profile-mode" : ""} ${activeTab === "friends" && !selectedDirectUser ? "tg-contacts-mode" : ""}`}>
       <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
         <header className="tg-sidebar-header">
           <div className="tg-brand-mark" aria-hidden="true"><Send size={25} fill="currentColor"/></div>
@@ -464,7 +464,7 @@ function AppContent() {
         </nav>
       </aside>
 
-      <section className={`tg-conversation ${isMobileChat ? "tg-conversation-visible-mobile" : ""}`}>
+      <section className={`tg-conversation ${isMobileChat || (activeTab === "friends" && !selectedDirectUser) ? "tg-conversation-visible-mobile" : ""}`}>
         {activeTab === "friends" && !selectedDirectUser ? <div className="tg-contacts-page">
           <header className="tg-contacts-header">
             <h1>Контакты</h1>
