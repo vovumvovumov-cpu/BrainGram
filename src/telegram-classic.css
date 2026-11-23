@@ -896,3 +896,45 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
   }
   .tg-contacts-mode .tg-contacts-page{padding-bottom:90px!important}
 }
+
+
+/* MechaGram-inspired account, privacy, wallet and business settings suite. */
+.tg-settings-suite{max-height:min(88vh,900px);overflow-y:auto;overscroll-behavior:contain}
+.tg-settings-suite h2{margin:8px 38px 20px 0}
+.tg-settings-back{display:inline-flex;align-items:center;margin:0 0 10px;padding:8px 0;border:0;background:transparent;color:#4779d5;font-weight:650}
+.tg-settings-user{display:flex;align-items:center;gap:12px;padding:14px;margin:0 0 16px;border-radius:16px;background:#f4f6fa}
+.tg-settings-user>div{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.tg-settings-user small{color:#858b96}
+.tg-settings-user>button{border:0;background:transparent;color:#4779d5;font-weight:650}
+.tg-settings-group{display:flex;flex-direction:column;margin:12px 0;padding:5px 12px;border-radius:16px;background:#f7f8fb}
+.tg-settings-group>button{position:relative;display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:13px 24px 13px 3px;border:0;border-bottom:1px solid #e9ecf1;background:transparent;text-align:left;color:#20232a}
+.tg-settings-group>button:last-child{border-bottom:0}
+.tg-settings-group>button b{font-size:14px;font-weight:650}
+.tg-settings-group>button small{font-size:12px;color:#858b96}
+.tg-settings-group>button>span{position:absolute;right:2px;top:50%;transform:translateY(-50%);font-size:22px;color:#a0a5ae}
+.tg-settings-info{display:flex;flex-direction:column;gap:8px;margin:12px 0;padding:15px;border-radius:14px;background:#f5f6fa;color:#30343b}
+.tg-settings-info span{font-size:13px;color:#858b96}
+.tg-settings-action{width:100%;min-height:46px;margin:10px 0;padding:10px 16px;border:0;border-radius:13px;background:#4e7df2;color:#fff;font-weight:650}
+.tg-settings-field{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 4px;border-bottom:1px solid #eceef2;color:#292d35;font-size:14px}
+.tg-settings-field input[type=checkbox]{width:20px;height:20px;accent-color:#4e7df2}
+.tg-settings-field select,.tg-settings-field input:not([type=checkbox]),.tg-settings-field textarea{max-width:58%;padding:9px 10px;border:1px solid #e2e6ed;border-radius:10px;background:#fff;color:#282c34;font:inherit}
+.tg-settings-field.vertical{align-items:stretch;flex-direction:column}
+.tg-settings-field.vertical input,.tg-settings-field.vertical textarea{max-width:none;width:100%;box-sizing:border-box}
+.tg-settings-note{padding:10px 2px;color:#8a909a;font-size:12px;line-height:1.5}
+.tg-device-qr{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 12px;border-radius:18px;background:#f5f6fa;text-align:center}
+.tg-device-qr svg{padding:10px;border-radius:12px;background:#fff;color:#20242b}
+.tg-device-qr span{max-width:290px;color:#858b96;font-size:13px;line-height:1.5}
+.tg-settings-choice{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid #eceef2}
+.tg-settings-choice input{accent-color:#4e7df2}
+.tg-premium-hero{padding:20px 12px;border-radius:18px;background:linear-gradient(145deg,#492b83,#a24fc2);color:#fff;text-align:center}
+.tg-premium-hero>div{font-size:48px}
+.tg-premium-hero h2{margin:8px 0;color:#fff}
+.tg-premium-hero p{margin:0;color:#f2e8ff;font-size:13px}
+.tg-premium-hero.gram{background:linear-gradient(145deg,#332d88,#a45ad8)}
+.tg-gram-balance{display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0;padding:22px 12px;border-radius:17px;background:#f6f4fb}
+.tg-gram-balance small,.tg-gram-balance span{color:#888393;font-size:12px;text-align:center}
+.tg-gram-balance strong{font-size:32px;color:#4b3b91}
+@media(max-width:700px){
+ .tg-settings-suite{width:100%;max-height:88dvh;padding:22px 18px calc(22px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0}
+ .tg-settings-group>button{padding-top:14px;padding-bottom:14px}
+}
