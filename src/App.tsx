@@ -494,13 +494,13 @@ function AppContent() {
               const previousInitial = index > 0 ? (visibleContacts[index - 1].display_name.trim()[0] || visibleContacts[index - 1].username[0] || "U").toLocaleUpperCase("ru") : "";
               const currentInitial = initial.toLocaleUpperCase("ru");
               const lastSeen = contact.last_message_at ? new Date(contact.last_message_at).toLocaleString("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "давно";
-              return <React.Fragment key={contact.conversation_id}>
+              return <div className="tg-contact-group" key={contact.conversation_id}>
                 {contactsSort === "alphabetical" && currentInitial !== previousInitial && <div className="tg-contact-letter">{currentInitial}</div>}
                 <button type="button" className="tg-contact-item" onClick={() => void openDirectChat({ id: contact.peer_id, username: contact.username, display_name: contact.display_name, avatar_url: contact.avatar_url })}>
                   <span className="tg-contact-avatar">{contact.avatar_url ? <img src={contact.avatar_url} alt=""/> : initial}</span>
                   <span className="tg-contact-copy"><strong>{contact.display_name}</strong><small>был(а) {lastSeen}</small></span>
                 </button>
-              </React.Fragment>;
+              </div>;
             })}
             {!recentChatsLoading && !recentChatsError && visibleContacts.length === 0 && <div className="tg-contacts-empty">{friendInvite ? "Контакты не найдены" : "Пока нет контактов. Начни переписку, чтобы они появились здесь."}</div>}
           </section>
