@@ -818,8 +818,8 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
   .tg-contacts-header h1{margin:0 0 7px;flex:1;text-align:center;font-size:27px;line-height:1.2;font-weight:650;color:#17181d}
   .tg-contacts-tools{display:flex;align-items:center;gap:7px;padding:8px;border-radius:36px;background:#fff;box-shadow:0 4px 18px #17212b12}
   .tg-contacts-tools button{width:42px;height:42px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:#17191d}
-  .tg-contacts-search{width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#17191d}
-  .tg-contacts-search input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .tg-contacts-search{width:150px;height:42px;display:flex;align-items:center;gap:8px;color:#777b83}
+  .tg-contacts-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#202127;font:500 14px Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
   .tg-contacts-shortcuts{
     flex:none;display:flex;flex-direction:column;gap:0;margin:0 22px 18px;
     padding:5px 24px;border-radius:28px;background:#fff;
