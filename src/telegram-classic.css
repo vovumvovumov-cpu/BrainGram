@@ -632,3 +632,110 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
 .bg-nft-error{color:#c34242}
 .bg-nft-note{margin:0;color:#9aa5ad;font-size:10px;line-height:1.5;text-align:center}
 @media(max-width:700px){.bg-nft-page{padding:0 0 12px}.bg-nft-wallet{flex-wrap:wrap}.bg-nft-wallet-copy{min-width:calc(100% - 60px)}}
+
+
+/* Mobile Telegram Android-style home screen: measured proportions from the supplied reference. */
+.tg-brand-mark{
+  width:48px;height:48px;flex:none;display:grid;place-items:center;
+  border-radius:50%;color:#fff;background:#35a9e8;
+  box-shadow:inset 0 0 0 2px #fff,0 0 0 1px #35a9e8;
+}
+.tg-sidebar-header .tg-menu-button{
+  width:38px;height:42px;display:grid;place-items:center;
+  border-radius:12px;background:transparent;color:#17191d;
+}
+.tg-chat-filter{
+  display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4px;
+  height:42px;margin:0 12px 12px;padding:4px;
+  border:1px solid #eceef2;border-radius:24px;background:#fff;
+  box-shadow:0 2px 7px #17212b12;
+}
+.tg-chat-filter button{
+  height:34px;border:0;border-radius:20px;background:transparent;
+  color:#858993;font:600 14px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.tg-chat-filter button.active{background:#e9efff;color:#5278d5}
+@media(max-width:700px){
+  .telegram-app{
+    display:flex!important;flex-direction:column!important;
+    width:100%;height:100dvh;min-height:100dvh;overflow:hidden;
+    background:#fff!important;
+  }
+  .tg-sidebar{
+    display:flex!important;flex:1 1 auto!important;flex-direction:column!important;
+    width:100%!important;min-width:0!important;max-width:none!important;
+    height:100%!important;min-height:0!important;overflow:hidden!important;
+    border:0!important;background:#fff!important;
+  }
+  .tg-sidebar.tg-sidebar-hidden-mobile{display:none!important}
+  .tg-sidebar-header{
+    flex:none;height:68px!important;min-height:68px!important;
+    display:flex;align-items:center;gap:12px;padding:0 16px!important;
+    background:#fff;
+  }
+  .tg-sidebar-header strong{flex:1;color:#3979d8;font-size:23px;font-weight:700;letter-spacing:-.5px}
+  .tg-brand-mark{width:44px;height:44px}
+  .tg-search-wrap{
+    flex:none;height:44px!important;min-height:44px;margin:4px 12px 12px!important;
+    padding:0 16px;border:0!important;border-radius:26px!important;
+    background:#f1f1f3!important;gap:12px;color:#777b83;
+  }
+  .tg-search-wrap svg{width:20px;height:20px}
+  .tg-search-wrap input{font-size:15px!important;font-weight:500;color:#202127}
+  .tg-chat-filter{flex:none;margin-bottom:10px}
+  .tg-list-heading{display:none!important}
+  .tg-chat-list{
+    flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;
+    padding:0 0 6px!important;background:#fff;
+    scrollbar-width:none;
+  }
+  .tg-chat-list::-webkit-scrollbar{display:none}
+  .tg-chat-row{
+    min-height:78px!important;height:78px!important;
+    display:flex;align-items:center;gap:13px!important;
+    padding:8px 13px!important;border-radius:0!important;
+    background:#fff!important;
+  }
+  .tg-chat-row:hover,.tg-chat-row-active{background:#f6f8fb!important}
+  .tg-avatar{
+    width:56px!important;height:56px!important;min-width:56px!important;
+    border-radius:50%!important;font-size:20px!important;
+  }
+  .tg-chat-row-copy{min-width:0;flex:1;gap:5px!important}
+  .tg-chat-row-copy strong{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:#191a1f;font-size:16px!important;font-weight:600!important;
+    line-height:1.2;
+  }
+  .tg-chat-row-copy small{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:#777b83!important;font-size:14px!important;font-weight:600!important;
+    line-height:1.25;
+  }
+  .tg-chat-row-time{
+    align-self:flex-start;padding-top:5px!important;
+    color:#858991!important;font-size:12px!important;
+  }
+  .tg-sidebar-bottom{
+    position:relative!important;z-index:20;flex:none!important;
+    width:auto!important;height:70px!important;min-height:70px!important;
+    margin:0 12px max(7px,env(safe-area-inset-bottom))!important;
+    padding:4px!important;gap:2px!important;
+    border:1px solid #edf0f4!important;border-radius:36px!important;
+    background:#fff!important;box-shadow:0 3px 12px #17212b18!important;
+  }
+  .tg-sidebar-bottom button{gap:3px!important;font-size:12px!important}
+  .tg-sidebar-bottom button svg{width:27px!important;height:27px!important}
+  .tg-nav-profile-avatar{width:27px!important;height:27px!important}
+  .tg-compose-button{
+    position:fixed!important;z-index:25;right:20px!important;
+    bottom:calc(91px + env(safe-area-inset-bottom))!important;
+    width:56px!important;height:56px!important;border-radius:50%!important;
+    display:grid!important;place-items:center!important;
+    color:#fff!important;background:#4e7df2!important;
+    box-shadow:0 4px 12px #3159c944!important;
+  }
+  .tg-conversation{display:none!important}
+  .tg-conversation.tg-conversation-visible-mobile{display:flex!important}
+  .tg-profile-mode .tg-sidebar-bottom{position:fixed!important}
+}
