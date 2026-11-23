@@ -187,6 +187,7 @@ function AppContent() {
     setNotifications((current) => current.map((item) => ({ ...item, unread: false })));
   }
   const [activeTab, setActiveTab] = useState<"chats" | "servers" | "friends" | "notifications" | "profile">("chats");
+  const [chatFilter, setChatFilter] = useState<"all" | "games">("all");
   const [showChannelModal, setShowChannelModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
   const [newChannelDescription, setNewChannelDescription] = useState("");
@@ -399,16 +400,19 @@ function AppContent() {
     <main className={`telegram-app ${activeTab === "profile" ? "tg-profile-mode" : ""}`}>
       <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
         <header className="tg-sidebar-header">
-          <button className="tg-menu-button" type="button" aria-label="Меню" onClick={() => setShowSettings(true)}>☰</button>
+          <div className="tg-brand-mark" aria-hidden="true"><Send size={25} fill="currentColor"/></div>
           <strong>BrainGram</strong>
-          <button className="tg-compose-button" type="button" aria-label="Найти пользователя" onClick={() => document.getElementById("tg-search")?.focus()}><Plus size={21}/></button>
+          <button className="tg-menu-button" type="button" aria-label="Дополнительно" onClick={() => setShowSettings(true)}><MoreHorizontal size={25}/></button>
         </header>
         <div className="tg-search-wrap">
-          <Search size={18}/>
-          <input id="tg-search" value={friendInvite} onChange={(event) => setFriendInvite(event.target.value)} placeholder="Поиск" autoComplete="off"/>
+          <Search size={21}/>
+          <input id="tg-search" value={friendInvite} onChange={(event) => setFriendInvite(event.target.value)} placeholder="Поиск чатов" autoComplete="off"/>
           {friendInvite && <button type="button" onClick={() => setFriendInvite("")}>×</button>}
         </div>
-        <div className="tg-list-heading">{friendInvite.trim().length >= 3 ? "РЕЗУЛЬТАТЫ ПОИСКА" : "ЛИЧНЫЕ СООБЩЕНИЯ"}</div>
+        <div className="tg-chat-filter" role="tablist" aria-label="Фильтр чатов">
+          <button type="button" role="tab" aria-selected={chatFilter === "all"} className={chatFilter === "all" ? "active" : ""} onClick={() => setChatFilter("all")}>Все чаты</button>
+          <button type="button" role="tab" aria-selected={chatFilter === "games"} className={chatFilter === "games" ? "active" : ""} onClick={() => setChatFilter("games")}>Игры</button>
+        </div>
         <div className="tg-chat-list">
           {userSearchLoading && <div className="tg-list-empty">Ищем пользователей…</div>}
           {userSearchError && <div className="tg-list-empty tg-error">{userSearchError}</div>}
