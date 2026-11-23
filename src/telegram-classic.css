@@ -802,3 +802,74 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
   .tg-settings-user strong{font-size:16px}
   .tg-settings-user small{font-size:13px;color:#84919a}
 }
+
+
+/* Contacts page: Telegram Android reference layout */
+@media(max-width:700px){
+  .tg-contacts-page{
+    position:relative;display:flex!important;flex-direction:column;align-items:stretch;
+    width:100%;height:100%;min-height:0;overflow:hidden;background:#f0f0f4;
+    padding:0 0 10px;box-sizing:border-box;
+  }
+  .tg-contacts-header{
+    flex:none;min-height:112px;display:flex;align-items:flex-end;justify-content:space-between;
+    gap:12px;padding:20px 18px 16px 22px;box-sizing:border-box;
+  }
+  .tg-contacts-header h1{margin:0 0 7px;flex:1;text-align:center;font-size:27px;line-height:1.2;font-weight:650;color:#17181d}
+  .tg-contacts-tools{display:flex;align-items:center;gap:7px;padding:8px;border-radius:36px;background:#fff;box-shadow:0 4px 18px #17212b12}
+  .tg-contacts-tools button{width:42px;height:42px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:#17191d}
+  .tg-contacts-search{width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#17191d}
+  .tg-contacts-search input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .tg-contacts-shortcuts{
+    flex:none;display:flex;flex-direction:column;gap:0;margin:0 22px 18px;
+    padding:5px 24px;border-radius:28px;background:#fff;
+  }
+  .tg-contacts-shortcuts button{
+    min-height:94px;display:flex;align-items:center;gap:22px;padding:8px 10px;
+    border:0;border-bottom:1px solid #f5f5f6;background:transparent;text-align:left;color:#191a1f;
+  }
+  .tg-contacts-shortcuts button:last-child{border-bottom:0}
+  .tg-contacts-shortcuts strong{font-size:19px;font-weight:700}
+  .tg-contacts-shortcut-icon{width:53px;height:53px;flex:none;display:grid;place-items:center;border-radius:17px;color:#fff}
+  .tg-contacts-shortcut-icon.invite{background:#229ed9}
+  .tg-contacts-shortcut-icon.calls{background:#35b94d}
+  .tg-contacts-list-card{
+    position:relative;flex:1 1 auto;min-height:0;overflow-y:auto;margin:0 22px;
+    padding:23px 18px 22px 18px;border-radius:28px;background:#fff;
+    scrollbar-width:none;
+  }
+  .tg-contacts-list-card::-webkit-scrollbar{display:none}
+  .tg-contacts-list-title{margin:0 0 16px;color:#6084d5;font-size:17px;font-weight:650}
+  .tg-contact-letter{position:absolute;left:24px;width:25px;color:#92959c;font-size:19px;font-weight:600;transform:translateY(24px)}
+  .tg-contact-item{
+    width:100%;min-height:94px;display:flex;align-items:center;gap:15px;
+    padding:7px 0 7px 54px;border:0;background:transparent;text-align:left;
+  }
+  .tg-contact-avatar{
+    width:70px;height:70px;min-width:70px;display:grid;place-items:center;overflow:hidden;
+    border-radius:50%;background:linear-gradient(145deg,#65b8f2,#3987d1);
+    color:#fff;font-size:25px;font-weight:600;
+  }
+  .tg-contact-avatar img{width:100%;height:100%;object-fit:cover}
+  .tg-contact-copy{min-width:0;display:flex;flex-direction:column;gap:5px}
+  .tg-contact-copy strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#191a1f;font-size:18px;font-weight:600}
+  .tg-contact-copy small{color:#92969d;font-size:15px;font-weight:650}
+  .tg-contacts-empty{padding:24px 8px;text-align:center;color:#969aa2;font-size:14px;line-height:1.5}
+  .tg-contacts-add{
+    position:absolute;right:20px;bottom:92px;z-index:5;width:68px;height:68px;
+    display:grid;place-items:center;border:0;border-radius:50%;background:#4e7df2;
+    color:#fff;box-shadow:0 4px 14px #3159c944;
+  }
+  .tg-contacts-page~.tg-sidebar-bottom{position:fixed}
+  .tg-sidebar:has(+ .tg-conversation .tg-contacts-page) .tg-sidebar-bottom{position:fixed!important}
+  .tg-sidebar:has(+ .tg-conversation .tg-contacts-page) .tg-sidebar-header,
+  .tg-sidebar:has(+ .tg-conversation .tg-contacts-page) .tg-search-wrap,
+  .tg-sidebar:has(+ .tg-conversation .tg-contacts-page) .tg-chat-filter,
+  .tg-sidebar:has(+ .tg-conversation .tg-contacts-page) .tg-chat-list{display:none!important}
+  .tg-sidebar:has(+ .tg-conversation .tg-contacts-page){display:contents!important}
+  .tg-sidebar:has(+ .tg-conversation .tg-contacts-page) .tg-sidebar-bottom{
+    position:fixed!important;left:16px!important;right:16px!important;bottom:max(7px,env(safe-area-inset-bottom))!important;
+    z-index:30!important;width:auto!important;margin:0!important;
+  }
+  .tg-contacts-page{padding-bottom:92px}
+}
