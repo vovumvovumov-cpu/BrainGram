@@ -294,3 +294,33 @@ button, input, textarea, select { font-family:inherit; }
   .telegram-app .tg-sidebar-bottom button { font-size:10px; }
   .telegram-app .tg-contacts-shortcuts strong { font-size:11px; }
 }
+
+/* Mobile hotfix: keep the actual chat pane visible and anchor navigation to the bottom.
+   These explicit overrides win over legacy mobile rules in style.css. */
+@media (max-width:700px) {
+  .telegram-app .tg-conversation {
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    position:relative !important;
+    flex:1 1 auto !important;
+    width:100% !important;
+    min-height:0 !important;
+  }
+  .telegram-app .tg-sidebar-bottom {
+    position:fixed !important;
+    top:auto !important;
+    left:0 !important;
+    right:0 !important;
+    bottom:0 !important;
+    z-index:1000 !important;
+    display:flex !important;
+    visibility:visible !important;
+    width:100% !important;
+    border-radius:0 !important;
+    box-shadow:0 -2px 12px #17212b0d !important;
+  }
+  .telegram-app .tg-conversation-visible-mobile {
+    display:flex !important;
+  }
+}
