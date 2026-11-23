@@ -4,6 +4,7 @@ import App from "./App";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import "./style.css";
 import "./telegram-classic.css";
+import "./telegram-android.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
