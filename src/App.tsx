@@ -483,11 +483,11 @@ function AppContent() {
             <button type="button" className={profileSection === "archive" ? "active" : ""} onClick={() => setProfileSection("archive")}><Archive size={16}/> Архив публикаций</button>
             <button type="button" className={profileSection === "gifts" ? "active" : ""} onClick={() => setProfileSection("gifts")}><Gift size={16}/> Подарки</button>
           </div>
-          <div className="tg-profile-feed">
+          {profileSection === "gifts" ? <NftGifts /> : <div className="tg-profile-feed">
             <div className="tg-profile-feed-line"/>
             <button type="button" className="tg-profile-add" onClick={() => window.alert("Публикации BrainGram скоро появятся.")}><Plus size={22}/><span>Добавить</span></button>
-            <p>{profileSection === "posts" ? "Пока нет публикаций" : profileSection === "archive" ? "Архив публикаций пуст" : "Подарков пока нет"}</p>
-          </div>
+            <p>{profileSection === "posts" ? "Пока нет публикаций" : "Архив публикаций пуст"}</p>
+          </div>}
         </div> : selectedDirectUser ? <>
           <header className="tg-chat-header">
             <button className="tg-back" type="button" onClick={closeDirectChat} aria-label="Назад"><ArrowLeft size={21}/></button>
