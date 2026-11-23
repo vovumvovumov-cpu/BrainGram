@@ -3,7 +3,7 @@ import AuthGate from "./components/AuthGate";
 import { supabase } from "./lib/supabase";
 import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
 import { getOrCreateDirectConversation, loadDirectMessages, loadDirectConversationSummaries, sendDirectMessage, subscribeToDirectMessages, subscribeToDirectMessageActivity, type DirectConversationSummary, type DirectMessage } from "./lib/directMessages";
-import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft, Camera, Pencil, QrCode, Music2, Gift, Archive } from "lucide-react";
+import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft, Camera, Pencil, QrCode, Music2, Gift, Archive, Phone, UserPlus, ArrowDownWideNarrow } from "lucide-react";
 import NftGifts from "./components/NftGifts";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
@@ -188,6 +188,7 @@ function AppContent() {
   }
   const [activeTab, setActiveTab] = useState<"chats" | "servers" | "friends" | "notifications" | "profile">("chats");
   const [chatFilter, setChatFilter] = useState<"all" | "games">("all");
+  const [contactsSort, setContactsSort] = useState<"alphabetical" | "recent">("alphabetical");
   const [showChannelModal, setShowChannelModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
   const [newChannelDescription, setNewChannelDescription] = useState("");
@@ -396,6 +397,12 @@ function AppContent() {
   const visibleRecentChats = recentChats.filter((chat) =>
     !chatSearchTerm || chat.display_name.toLocaleLowerCase().includes(chatSearchTerm) || chat.username.toLocaleLowerCase().includes(chatSearchTerm) || chat.last_message.toLocaleLowerCase().includes(chatSearchTerm),
   );
+  const visibleContacts = recentChats
+    .filter((chat) => !chatSearchTerm || chat.display_name.toLocaleLowerCase().includes(chatSearchTerm) || chat.username.toLocaleLowerCase().includes(chatSearchTerm))
+    .slice()
+    .sort((left, right) => contactsSort === "alphabetical"
+      ? left.display_name.localeCompare(right.display_name, "ru")
+      : (right.last_message_at || "").localeCompare(left.last_message_at || ""));
   return (
     <main className={`telegram-app ${activeTab === "profile" ? "tg-profile-mode" : ""}`}>
       <aside className={`tg-sidebar ${isMobileChat ? "tg-sidebar-hidden-mobile" : ""}`}>
@@ -458,7 +465,47 @@ function AppContent() {
       </aside>
 
       <section className={`tg-conversation ${isMobileChat ? "tg-conversation-visible-mobile" : ""}`}>
-        {activeTab === "profile" && !selectedDirectUser ? <div className="tg-profile-page">
+        {activeTab === "friends" && !selectedDirectUser ? <div className="tg-contacts-page">
+          <header className="tg-contacts-header">
+            <h1>Контакты</h1>
+            <div className="tg-contacts-tools">
+              <label className="tg-contacts-search" aria-label="Поиск контактов"><Search size={23}/><input value={friendInvite} onChange={(event) => setFriendInvite(event.target.value)} placeholder="Поиск"/></label>
+              <button type="button" aria-label="Изменить сортировку" onClick={() => setContactsSort((current) => current === "alphabetical" ? "recent" : "alphabetical")}><ArrowDownWideNarrow size={24}/></button>
+            </div>
+          </header>
+          <section className="tg-contacts-shortcuts">
+            <button type="button" onClick={() => {
+              const inviteUrl = window.location.origin + window.location.pathname;
+              if (navigator.share) void navigator.share({ title: "BrainGram", text: "Присоединяйся ко мне в BrainGram!", url: inviteUrl }).catch(() => undefined);
+              else if (navigator.clipboard) void navigator.clipboard.writeText(inviteUrl).then(() => window.alert("Ссылка BrainGram скопирована."));
+            }}>
+              <span className="tg-contacts-shortcut-icon invite"><UserPlus size={25}/></span><strong>Пригласить друзей</strong>
+            </button>
+            <button type="button" onClick={() => window.alert("История звонков появится, когда в BrainGram будут доступны звонки.")}>
+              <span className="tg-contacts-shortcut-icon calls"><Phone size={25} fill="currentColor"/></span><strong>Недавние звонки</strong>
+            </button>
+          </section>
+          <section className="tg-contacts-list-card">
+            <div className="tg-contacts-list-title">{contactsSort === "alphabetical" ? "По алфавиту" : "Недавно были в сети"}</div>
+            {recentChatsLoading && <div className="tg-contacts-empty">Загружаем контакты…</div>}
+            {recentChatsError && visibleContacts.length === 0 && <div className="tg-contacts-empty">{recentChatsError}</div>}
+            {!recentChatsLoading && visibleContacts.map((contact, index) => {
+              const initial = (contact.display_name.trim()[0] || contact.username[0] || "U").toUpperCase();
+              const previousInitial = index > 0 ? (visibleContacts[index - 1].display_name.trim()[0] || visibleContacts[index - 1].username[0] || "U").toLocaleUpperCase("ru") : "";
+              const currentInitial = initial.toLocaleUpperCase("ru");
+              const lastSeen = contact.last_message_at ? new Date(contact.last_message_at).toLocaleString("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "давно";
+              return <React.Fragment key={contact.conversation_id}>
+                {contactsSort === "alphabetical" && currentInitial !== previousInitial && <div className="tg-contact-letter">{currentInitial}</div>}
+                <button type="button" className="tg-contact-item" onClick={() => void openDirectChat({ id: contact.peer_id, username: contact.username, display_name: contact.display_name, avatar_url: contact.avatar_url })}>
+                  <span className="tg-contact-avatar">{contact.avatar_url ? <img src={contact.avatar_url} alt=""/> : initial}</span>
+                  <span className="tg-contact-copy"><strong>{contact.display_name}</strong><small>был(а) {lastSeen}</small></span>
+                </button>
+              </React.Fragment>;
+            })}
+            {!recentChatsLoading && !recentChatsError && visibleContacts.length === 0 && <div className="tg-contacts-empty">{friendInvite ? "Контакты не найдены" : "Пока нет контактов. Начни переписку, чтобы они появились здесь."}</div>}
+          </section>
+          <button type="button" className="tg-contacts-add" aria-label="Добавить контакт" onClick={() => { document.querySelector<HTMLInputElement>(".tg-contacts-search input")?.focus(); }}><UserPlus size={30}/></button>
+        </div> : activeTab === "profile" && !selectedDirectUser ? <div className="tg-profile-page">
           <div className="tg-profile-topbar">
             <button type="button" aria-label="QR-код" onClick={() => window.alert("QR-код профиля скоро появится.")}><QrCode size={24}/></button>
             <button type="button" aria-label="Дополнительно" onClick={() => setShowSettings(true)}><MoreHorizontal size={25}/></button>
