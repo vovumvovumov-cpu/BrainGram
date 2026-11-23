@@ -15,7 +15,8 @@
     "react": "latest",
     "react-dom": "latest",
     "lucide-react": "latest",
-    "@supabase/supabase-js": "^2.57.4"
+    "@supabase/supabase-js": "^2.57.4",
+    "@tonconnect/ui-react": "^2.3.1"
   },
   "devDependencies": {
     "@types/react": "latest",

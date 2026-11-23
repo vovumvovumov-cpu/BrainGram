@@ -4,6 +4,7 @@ import { supabase } from "./lib/supabase";
 import { searchUsersByUsername, type UserSearchResult } from "./lib/userSearch";
 import { getOrCreateDirectConversation, loadDirectMessages, loadDirectConversationSummaries, sendDirectMessage, subscribeToDirectMessages, subscribeToDirectMessageActivity, type DirectConversationSummary, type DirectMessage } from "./lib/directMessages";
 import { Search, Plus, Send, Paperclip, Smile, MoreHorizontal, MessageCircle, Users, Settings, Sparkles, Hash, Headphones, Mic, ChevronDown, Compass, Bell, Pin, Inbox, Trash2, UserRound, Server, ArrowLeft, Camera, Pencil, QrCode, Music2, Gift, Archive } from "lucide-react";
+import NftGifts from "./components/NftGifts";
 
 type Server = { id: number; name: string; letter: string; visibility?: "public" | "private" };
 type Channel = { id: number; serverId: number; name: string; message: string; time: string; initials: string; color: string; unread?: number };
@@ -482,11 +483,11 @@ function AppContent() {
             <button type="button" className={profileSection === "archive" ? "active" : ""} onClick={() => setProfileSection("archive")}><Archive size={16}/> Архив публикаций</button>
             <button type="button" className={profileSection === "gifts" ? "active" : ""} onClick={() => setProfileSection("gifts")}><Gift size={16}/> Подарки</button>
           </div>
-          <div className="tg-profile-feed">
+          {profileSection === "gifts" ? <NftGifts /> : <div className="tg-profile-feed">
             <div className="tg-profile-feed-line"/>
             <button type="button" className="tg-profile-add" onClick={() => window.alert("Публикации BrainGram скоро появятся.")}><Plus size={22}/><span>Добавить</span></button>
-            <p>{profileSection === "posts" ? "Пока нет публикаций" : profileSection === "archive" ? "Архив публикаций пуст" : "Подарков пока нет"}</p>
-          </div>
+            <p>{profileSection === "posts" ? "Пока нет публикаций" : "Архив публикаций пуст"}</p>
+          </div>}
         </div> : selectedDirectUser ? <>
           <header className="tg-chat-header">
             <button className="tg-back" type="button" onClick={closeDirectChat} aria-label="Назад"><ArrowLeft size={21}/></button>

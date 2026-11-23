@@ -603,3 +603,32 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
     width:22px!important;height:22px!important;
   }
 }
+
+/* TON NFT gifts */
+.bg-nft-page{width:100%;max-width:760px;display:flex;flex-direction:column;gap:16px;padding:4px 0 18px}
+.bg-nft-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bg-nft-kicker{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#229ed9}
+.bg-nft-heading h2{margin:5px 0;font-size:25px;color:#17212b}
+.bg-nft-heading p{margin:0;color:#82909b;font-size:13px}
+.bg-nft-gem{width:52px;height:52px;display:grid;place-items:center;border-radius:17px;background:#e5f5fc;color:#229ed9}
+.bg-nft-wallet{display:flex;align-items:center;gap:11px;padding:13px;border:1px solid #e7edf1;border-radius:17px;background:#fff}
+.bg-nft-wallet-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#eaf5fb;color:#229ed9;flex:none}
+.bg-nft-wallet-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.bg-nft-wallet-copy strong{font-size:13px;color:#17212b}
+.bg-nft-wallet-copy span{font-size:11px;color:#87949e;overflow:hidden;text-overflow:ellipsis}
+.bg-nft-empty{display:flex;align-items:center;flex-direction:column;text-align:center;padding:30px 18px;border:1px dashed #d9e3e9;border-radius:18px;background:#fff}
+.bg-nft-empty>div{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:#eff7fb;color:#229ed9;margin-bottom:12px}
+.bg-nft-empty strong{font-size:15px;color:#17212b}
+.bg-nft-empty p{max-width:330px;margin:7px 0 0;color:#87949e;font-size:12px;line-height:1.5}
+.bg-nft-list-head{display:flex;align-items:center;justify-content:space-between;color:#17212b;font-size:14px}
+.bg-nft-list-head button{display:flex;align-items:center;gap:5px;border:0;background:transparent;color:#229ed9;font:inherit;font-size:12px;cursor:pointer}
+.bg-nft-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.bg-nft-card{display:flex;min-width:0;flex-direction:column;gap:5px;padding:9px;border:1px solid #e7edf1;border-radius:15px;background:#fff}
+.bg-nft-card img,.bg-nft-no-image{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:#f0f5f8}
+.bg-nft-no-image{display:grid;place-items:center;color:#229ed9}
+.bg-nft-card strong{font-size:12px;color:#17212b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bg-nft-card span{font-size:10px;color:#87949e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bg-nft-message,.bg-nft-error{padding:12px;border-radius:12px;background:#fff;color:#71818d;font-size:13px}
+.bg-nft-error{color:#c34242}
+.bg-nft-note{margin:0;color:#9aa5ad;font-size:10px;line-height:1.5;text-align:center}
+@media(max-width:700px){.bg-nft-page{padding:0 0 12px}.bg-nft-wallet{flex-wrap:wrap}.bg-nft-wallet-copy{min-width:calc(100% - 60px)}}
