@@ -324,3 +324,267 @@ button, input, textarea, select { font-family:inherit; }
     display:flex !important;
   }
 }
+
+
+/* JavaGram-inspired Android mobile interface adaptation.
+   Mobile-first visual pass: denser Telegram-style chat list, classic blue accents,
+   full-height conversation, compact header and bottom navigation. */
+@media (max-width:700px) {
+  html, body, #root { width:100%; min-width:320px; height:100%; min-height:100%; overflow:hidden; }
+  body { background:#fff !important; }
+  .telegram-app {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) !important;
+    grid-template-rows:minmax(0,1fr) !important;
+    width:100% !important;
+    height:100dvh !important;
+    min-height:0 !important;
+    max-height:100dvh !important;
+    margin:0 !important;
+    overflow:hidden !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    box-shadow:none !important;
+  }
+  .telegram-app .tg-sidebar {
+    grid-column:1 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:100% !important;
+    min-height:0 !important;
+    overflow:hidden !important;
+    border:0 !important;
+    background:#fff !important;
+  }
+  .telegram-app .tg-sidebar-header {
+    flex:0 0 58px !important;
+    height:58px !important;
+    min-height:58px !important;
+    padding:0 16px !important;
+    gap:11px !important;
+    border-bottom:1px solid #edf0f2 !important;
+    background:#fff !important;
+  }
+  .telegram-app .tg-brand-mark {
+    width:36px !important;
+    height:36px !important;
+    border-radius:50% !important;
+    background:#3390ec !important;
+    color:#fff !important;
+  }
+  .telegram-app .tg-sidebar-header strong {
+    flex:1 !important;
+    color:#229ed9 !important;
+    font-size:19px !important;
+    font-weight:700 !important;
+  }
+  .telegram-app .tg-menu-button {
+    width:38px !important;
+    height:38px !important;
+    border-radius:50% !important;
+    color:#788792 !important;
+  }
+  .telegram-app .tg-search-wrap {
+    flex:0 0 42px !important;
+    height:42px !important;
+    min-height:42px !important;
+    margin:10px 13px 9px !important;
+    padding:0 13px !important;
+    border:1px solid #e7ebef !important;
+    border-radius:11px !important;
+    background:#f2f4f6 !important;
+  }
+  .telegram-app .tg-search-wrap input { font-size:14px !important; }
+  .telegram-app .tg-chat-filter {
+    flex:0 0 38px !important;
+    height:38px !important;
+    margin:0 13px 7px !important;
+    padding:3px !important;
+    border:0 !important;
+    border-radius:9px !important;
+    background:#f1f3f5 !important;
+  }
+  .telegram-app .tg-chat-filter button {
+    min-height:31px !important;
+    height:31px !important;
+    border-radius:7px !important;
+    color:#7c8992 !important;
+    font-size:13px !important;
+  }
+  .telegram-app .tg-chat-filter button.active {
+    background:#fff !important;
+    color:#278fc8 !important;
+    box-shadow:0 1px 3px #17212b18 !important;
+  }
+  .telegram-app .tg-chat-list {
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    padding:0 0 8px !important;
+    background:#fff !important;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+  }
+  .telegram-app .tg-chat-row {
+    width:100% !important;
+    min-height:73px !important;
+    padding:9px 14px !important;
+    gap:12px !important;
+    border:0 !important;
+    border-bottom:1px solid #f1f3f5 !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    text-align:left !important;
+  }
+  .telegram-app .tg-chat-row:active,
+  .telegram-app .tg-chat-row.tg-chat-row-active { background:#eaf4fc !important; }
+  .telegram-app .tg-avatar {
+    width:49px !important;
+    height:49px !important;
+    min-width:49px !important;
+    min-height:49px !important;
+    border-radius:50% !important;
+    font-size:19px !important;
+  }
+  .telegram-app .tg-chat-row-copy { flex:1 !important; min-width:0 !important; gap:5px !important; }
+  .telegram-app .tg-chat-row-copy strong { color:#202a33 !important; font-size:14px !important; font-weight:650 !important; }
+  .telegram-app .tg-chat-row-copy small { color:#89959d !important; font-size:12px !important; }
+  .telegram-app .tg-chat-row-time { padding-top:3px !important; color:#9aa5ad !important; font-size:10px !important; }
+  .telegram-app .tg-sidebar-bottom {
+    position:relative !important;
+    z-index:10 !important;
+    flex:0 0 auto !important;
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    align-items:stretch !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:62px !important;
+    margin:0 !important;
+    padding:5px 5px max(7px,env(safe-area-inset-bottom)) !important;
+    border:0 !important;
+    border-top:1px solid #e8edf0 !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    box-shadow:0 -2px 8px #17212b08 !important;
+  }
+  .telegram-app .tg-sidebar-bottom button {
+    min-width:0 !important;
+    min-height:48px !important;
+    padding:4px 1px !important;
+    gap:3px !important;
+    border:0 !important;
+    border-radius:9px !important;
+    color:#87939c !important;
+    font-size:10px !important;
+  }
+  .telegram-app .tg-sidebar-bottom button svg { width:22px !important; height:22px !important; }
+  .telegram-app .tg-sidebar-bottom button.tg-nav-active {
+    background:#eaf4fc !important;
+    color:#278fc8 !important;
+  }
+  .telegram-app .tg-nav-profile-avatar { width:22px !important; height:22px !important; }
+  .telegram-app .tg-conversation {
+    grid-column:1 !important;
+    grid-row:1 !important;
+    display:none !important;
+    flex-direction:column !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    height:100% !important;
+    overflow:hidden !important;
+    background:#dfe8ee !important;
+  }
+  .telegram-app .tg-conversation.tg-conversation-visible-mobile {
+    display:flex !important;
+  }
+  .telegram-app .tg-sidebar.tg-sidebar-hidden-mobile { display:none !important; }
+  .telegram-app .tg-chat-header {
+    flex:0 0 58px !important;
+    height:58px !important;
+    min-height:58px !important;
+    padding:0 9px !important;
+    gap:9px !important;
+    border-bottom:1px solid #e3e8ec !important;
+    background:#fff !important;
+    box-shadow:0 1px 3px #17212b0b !important;
+  }
+  .telegram-app .tg-back {
+    display:grid !important;
+    flex:0 0 34px !important;
+    width:34px !important;
+    height:34px !important;
+    border-radius:50% !important;
+    color:#3390ec !important;
+  }
+  .telegram-app .tg-chat-header .tg-avatar {
+    width:39px !important;
+    height:39px !important;
+    min-width:39px !important;
+    min-height:39px !important;
+  }
+  .telegram-app .tg-peer { flex:1 !important; min-width:0 !important; gap:3px !important; }
+  .telegram-app .tg-peer strong { color:#202a33 !important; font-size:14px !important; }
+  .telegram-app .tg-peer small { color:#89959d !important; font-size:11px !important; }
+  .telegram-app .tg-header-action {
+    flex:0 0 34px !important;
+    width:34px !important;
+    height:34px !important;
+    border-radius:50% !important;
+    color:#77858f !important;
+  }
+  .telegram-app .tg-message-area {
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    padding:16px 10px !important;
+    background-color:#dfe8ee !important;
+    background-image:radial-gradient(#c4d2dc .6px,transparent .6px) !important;
+    background-size:18px 18px !important;
+    overscroll-behavior:contain;
+  }
+  .telegram-app .tg-messages { gap:7px !important; }
+  .telegram-app .tg-bubble {
+    max-width:86% !important;
+    padding:8px 11px 6px !important;
+    border-radius:12px !important;
+    box-shadow:0 1px 1px #17212b14 !important;
+  }
+  .telegram-app .tg-bubble-in { background:#fff !important; border-bottom-left-radius:4px !important; }
+  .telegram-app .tg-bubble-out { background:#d9fdd3 !important; border-bottom-right-radius:4px !important; }
+  .telegram-app .tg-bubble p { color:#202a33 !important; font-size:14px !important; line-height:1.43 !important; }
+  .telegram-app .tg-composer {
+    flex:0 0 auto !important;
+    min-height:62px !important;
+    padding:7px 8px max(8px,env(safe-area-inset-bottom)) !important;
+    gap:5px !important;
+    border-top:1px solid #e2e7ea !important;
+    background:#fff !important;
+  }
+  .telegram-app .tg-composer input {
+    flex:1 !important;
+    min-width:0 !important;
+    height:42px !important;
+    padding:0 14px !important;
+    border:1px solid #e4e9ed !important;
+    border-radius:22px !important;
+    background:#f1f3f5 !important;
+    font-size:14px !important;
+  }
+  .telegram-app .tg-attach { width:31px !important; height:36px !important; color:#82909a !important; }
+  .telegram-app .tg-send { width:40px !important; height:40px !important; border-radius:50% !important; background:#3390ec !important; }
+  .telegram-app .tg-welcome { background:#dfe8ee !important; }
+  .telegram-app .tg-welcome-card { width:min(330px,100%) !important; padding:25px 20px !important; border-radius:16px !important; }
+  .telegram-app .tg-contacts-mode .tg-sidebar-bottom,
+  .telegram-app .tg-profile-mode .tg-sidebar-bottom { position:fixed !important; }
+  .telegram-app .tg-contacts-page { padding:18px 14px 92px !important; background:#f0f0f4 !important; }
+  .telegram-app .tg-profile-page { padding:12px 14px 96px !important; background:#f0f0f4 !important; }
+}
