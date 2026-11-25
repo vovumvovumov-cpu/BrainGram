@@ -954,3 +954,180 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
 .tg-server-add-form>b{display:block;margin-bottom:8px;color:#2c3038;font-size:14px}
 .tg-server-error{margin:8px 0;color:#d24c4c;font-size:12px}
 @media(max-width:700px){.tg-server-card{gap:8px;padding:10px}.tg-server-card>button{padding:7px 8px}}
+
+
+/* JavaGram-inspired desktop adaptation for BrainGram.
+   Recreates the classic Telegram Desktop visual language in React/CSS;
+   BrainGram's Supabase, profile, contacts and TON components remain intact. */
+@media (min-width: 701px) {
+  .telegram-app {
+    display: grid !important;
+    grid-template-columns: 360px minmax(0, 1fr) !important;
+    width: min(1440px, 100vw) !important;
+    height: min(940px, 100dvh) !important;
+    min-height: 620px !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    border: 1px solid #c8d2dc !important;
+    border-radius: 12px !important;
+    background: #dce4eb !important;
+    box-shadow: 0 14px 48px #23384d24 !important;
+  }
+  .tg-sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 360px !important;
+    min-width: 360px !important;
+    max-width: 360px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    border-right: 1px solid #d5dde5 !important;
+    background: #fff !important;
+  }
+  .tg-sidebar-header {
+    height: 62px !important;
+    min-height: 62px !important;
+    padding: 0 17px !important;
+    border-bottom: 1px solid #f0f2f4;
+  }
+  .tg-brand-mark {
+    width: 39px !important;
+    height: 39px !important;
+    box-shadow: none !important;
+  }
+  .tg-sidebar-header strong {
+    color: #278fc8 !important;
+    font-size: 19px !important;
+    font-weight: 700 !important;
+  }
+  .tg-menu-button {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    color: #71808d !important;
+  }
+  .tg-search-wrap {
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 12px 13px 10px !important;
+    padding: 0 13px !important;
+    border: 1px solid #e6ebef !important;
+    border-radius: 9px !important;
+    background: #f4f6f8 !important;
+  }
+  .tg-chat-filter {
+    height: 38px !important;
+    margin: 0 13px 8px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: #f1f4f6 !important;
+    box-shadow: none !important;
+  }
+  .tg-chat-filter button { height: 30px !important; border-radius: 6px !important; font-size: 13px !important; }
+  .tg-chat-filter button.active { background: #fff !important; color: #278fc8 !important; box-shadow: 0 1px 3px #26384918 !important; }
+  .tg-chat-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding: 2px 0 8px !important;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd4dc transparent;
+  }
+  .tg-chat-row {
+    min-height: 76px !important;
+    padding: 10px 14px !important;
+    gap: 12px !important;
+    border-bottom: 1px solid #f4f5f6 !important;
+    background: #fff !important;
+  }
+  .tg-chat-row:hover { background: #f5f9fc !important; }
+  .tg-chat-row-active { background: #eaf4fb !important; }
+  .tg-avatar { width: 48px !important; height: 48px !important; flex: 0 0 48px !important; }
+  .tg-chat-row-copy { gap: 5px !important; }
+  .tg-chat-row-copy strong { color: #202a33 !important; font-size: 14px !important; font-weight: 650 !important; }
+  .tg-chat-row-copy small { color: #87939c !important; font-size: 12px !important; }
+  .tg-chat-row-time { color: #9aa5ad !important; font-size: 11px !important; }
+  .tg-sidebar-bottom {
+    flex: 0 0 62px !important;
+    height: 62px !important;
+    min-height: 62px !important;
+    margin: 0 !important;
+    padding: 5px 9px !important;
+    border: 0 !important;
+    border-top: 1px solid #e9edf0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+  .tg-sidebar-bottom button { border-radius: 7px !important; color: #788590 !important; }
+  .tg-sidebar-bottom button svg, .tg-nav-profile-avatar { width: 21px !important; height: 21px !important; }
+  .tg-sidebar-bottom button.tg-nav-active { background: #eaf4fb !important; color: #278fc8 !important; }
+  .tg-conversation {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: #dce4eb !important;
+  }
+  .tg-chat-header {
+    flex: 0 0 62px !important;
+    height: 62px !important;
+    min-height: 62px !important;
+    padding: 0 22px !important;
+    border-bottom: 1px solid #d3dce3 !important;
+    background: #fff !important;
+    box-shadow: 0 1px 2px #2638490a !important;
+  }
+  .tg-peer strong { color: #202a33 !important; font-size: 15px !important; }
+  .tg-peer small { color: #8b969e !important; font-size: 12px !important; }
+  .tg-header-action { color: #7e8b95 !important; border-radius: 8px !important; }
+  .tg-message-area {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding-top: 22px !important;
+    padding-bottom: 22px !important;
+    background-color: #dce4eb !important;
+    background-image:
+      radial-gradient(#c3d0da 0.6px, transparent .6px),
+      radial-gradient(#cbd6de 0.55px, transparent .55px) !important;
+    background-size: 20px 20px !important;
+  }
+  .tg-messages { gap: 7px !important; }
+  .tg-bubble {
+    max-width: min(68%, 560px) !important;
+    padding: 8px 11px 6px !important;
+    border-radius: 11px !important;
+    box-shadow: 0 1px 1px #26384914 !important;
+  }
+  .tg-bubble-in { background: #fff !important; border-bottom-left-radius: 4px !important; }
+  .tg-bubble-out { background: #e4ffc9 !important; border-bottom-right-radius: 4px !important; }
+  .tg-bubble p { color: #202a33 !important; font-size: 14px !important; line-height: 1.45 !important; }
+  .tg-composer {
+    flex: 0 0 auto !important;
+    min-height: 68px !important;
+    padding: 10px 18px !important;
+    border-top: 1px solid #d3dce3 !important;
+    background: #fff !important;
+  }
+  .tg-composer input {
+    height: 44px !important;
+    border: 0 !important;
+    border-radius: 9px !important;
+    background: #f2f5f7 !important;
+  }
+  .tg-attach { color: #84919a !important; }
+  .tg-send { width: 42px !important; height: 42px !important; border-radius: 50% !important; background: #2a9bd2 !important; }
+  .tg-welcome { background: #dce4eb !important; }
+  .tg-welcome-card { border: 1px solid #d5dfe6 !important; border-radius: 12px !important; background: #ffffffd9 !important; }
+  .tg-modal-backdrop { z-index: 100 !important; }
+  .tg-modal { max-height: min(84vh, 820px) !important; border-radius: 13px !important; box-shadow: 0 18px 60px #17212b30 !important; }
+  .tg-settings-suite { width: min(560px, calc(100vw - 40px)) !important; }
+  .tg-contacts-page, .tg-profile-page { max-width: 900px !important; margin: 0 auto !important; }
+}
+@media (max-width: 700px) {
+  .telegram-app { border: 0 !important; border-radius: 0 !important; }
+  .tg-sidebar, .tg-conversation { border-radius: 0 !important; }
+}
