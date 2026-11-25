@@ -166,6 +166,30 @@ function AppContent() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => localStorage.getItem("bg-notifications") !== "false");
   const [language, setLanguage] = useState(() => localStorage.getItem("bg-language") || "Русский");
   const [twoStepEnabled, setTwoStepEnabled] = useState(() => localStorage.getItem("bg-two-step") === "true");
+  type BgServerEntry = { id: string; name: string; host: string; port: number; description: string };
+  const [bgServers, setBgServers] = useState<BgServerEntry[]>(() => {
+    try { const raw = localStorage.getItem("bg-multiservers"); return raw ? JSON.parse(raw) as BgServerEntry[] : [{ id: "braingram", name: "BrainGram", host: "braingram.github.io", port: 443, description: "Основной сервер BrainGram" }, { id: "telegram", name: "Telegram", host: "149.154.167.51", port: 443, description: "Официальная сеть Telegram · требует отдельной MTProto-интеграции" }]; } catch { return [{ id: "braingram", name: "BrainGram", host: "braingram.github.io", port: 443, description: "Основной сервер BrainGram" }]; }
+  });
+  const [bgServerName, setBgServerName] = useState("");
+  const [bgServerAddress, setBgServerAddress] = useState("");
+  const [bgServerError, setBgServerError] = useState("");
+  const [activeBgServerId, setActiveBgServerId] = useState(() => localStorage.getItem("bg-active-server") || "braingram");
+  const addBgServer = () => {
+    const match = bgServerAddress.trim().match(/^([a-zA-Z0-9.-]+):(\d{1,5})$/);
+    if (!match || Number(match[2]) < 1 || Number(match[2]) > 65535) { setBgServerError("Введи адрес в формате host:port, например chat.example.com:2398"); return; }
+    const host = match[1].toLowerCase();
+    const port = Number(match[2]);
+    if (bgServers.some(server => server.host === host && server.port === port)) { setBgServerError("Этот адрес уже добавлен"); return; }
+    const next = [...bgServers, { id: host + ":" + port, name: bgServerName.trim() || host, host, port, description: "Пользовательский сервер · подключение ещё не настроено" }];
+    setBgServers(next); localStorage.setItem("bg-multiservers", JSON.stringify(next));
+    setBgServerAddress(""); setBgServerName(""); setBgServerError("");
+  };
+  const removeBgServer = (id: string) => {
+    if (id === "braingram" || id === "telegram") return;
+    const next = bgServers.filter(server => server.id !== id);
+    setBgServers(next); localStorage.setItem("bg-multiservers", JSON.stringify(next));
+    if (activeBgServerId === id) { setActiveBgServerId("braingram"); localStorage.setItem("bg-active-server", "braingram"); }
+  };
   const [friendSearch, setFriendSearch] = useState("");
   const [friendInvite, setFriendInvite] = useState("");
   const [userSearchResults, setUserSearchResults] = useState<UserSearchResult[]>([]);
@@ -595,6 +619,7 @@ function AppContent() {
               <button type="button" onClick={() => setSettingsSection("notifications")}><b>🔔 Уведомления и звуки</b><small>Сообщения и оповещения</small><span>›</span></button>
               <button type="button" onClick={() => setSettingsSection("chats")}><b>💬 Настройки чатов</b><small>Оформление и поведение переписок</small><span>›</span></button>
               <button type="button" onClick={() => setSettingsSection("devices")}><b>📱 Устройства</b><small>Активные сеансы и подключение по QR</small><span>›</span></button>
+              <button type="button" onClick={() => setSettingsSection("servers")}><b>🌐 Серверы и аккаунты</b><small>Список серверов и пользовательские адреса</small><span>›</span></button>
               <button type="button" onClick={() => setSettingsSection("language")}><b>🌐 Язык</b><small>{language}</small><span>›</span></button>
             </div>
             <div className="tg-settings-group">
@@ -625,6 +650,25 @@ function AppContent() {
           </> : settingsSection === "devices" ? <>
             <h2>Устройства</h2><div className="tg-device-qr"><QrCode size={104}/><b>Подключить устройство</b><span>Открой BrainGram на другом устройстве и отсканируй QR-код, когда синхронизация устройств будет подключена.</span></div>
             <div className="tg-settings-info"><b>Это устройство</b><span>Текущая веб-сессия</span></div>
+          </> : settingsSection === "servers" ? <>
+            <h2>Серверы и аккаунты</h2>
+            <p className="tg-settings-note">Идея JavaGram: несколько серверов в одном клиенте. Сейчас здесь можно сохранить адреса серверов локально; сетевое подключение к сторонним MTProto-серверам в BrainGram ещё не реализовано.</p>
+            <div className="tg-server-list">
+              {bgServers.map(server => <div className="tg-server-card" key={server.id}>
+                <span className="tg-server-mark">{server.name.slice(0,1).toUpperCase()}</span>
+                <div className="tg-server-card-copy"><strong>{server.name}</strong><small>{server.host}:{server.port}</small><small>{server.description}</small></div>
+                <button type="button" className={activeBgServerId === server.id ? "active" : ""} onClick={() => {setActiveBgServerId(server.id);localStorage.setItem("bg-active-server",server.id);}}>{activeBgServerId === server.id ? "Выбран" : "Выбрать"}</button>
+                {!["braingram","telegram"].includes(server.id) && <button type="button" className="tg-server-remove" aria-label="Удалить сервер" onClick={() => removeBgServer(server.id)}>×</button>}
+              </div>)}
+            </div>
+            <div className="tg-server-add-form">
+              <b>Добавить свой сервер</b>
+              <label className="tg-settings-field vertical">Название<input value={bgServerName} onChange={e=>setBgServerName(e.target.value)} placeholder="Например, Мой сервер"/></label>
+              <label className="tg-settings-field vertical">Адрес host:port<input value={bgServerAddress} onChange={e=>{setBgServerAddress(e.target.value);setBgServerError("");}} placeholder="chat.example.com:2398"/></label>
+              {bgServerError && <p className="tg-server-error">{bgServerError}</p>}
+              <button className="tg-settings-action" type="button" onClick={addBgServer}>Сохранить адрес</button>
+            </div>
+            <div className="tg-settings-info"><b>Что пока не подключено</b><span>Проверка сервера, получение RSA-ключа и дата-центров, отдельная авторизация и изоляция аккаунтов. Эти функции требуют отдельного MTProto-бэкенда, они не включаются простым добавлением адреса.</span></div>
           </> : settingsSection === "language" ? <>
             <h2>Язык приложения</h2>
             {["Русский","English","Français","Deutsch","Español"].map(item => <label className="tg-settings-choice" key={item}><input type="radio" name="bg-language" checked={language===item} onChange={()=>{setLanguage(item);localStorage.setItem("bg-language",item);}}/>{item}</label>)}
