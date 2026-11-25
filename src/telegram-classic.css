@@ -942,8 +942,8 @@ textarea.tg-profile-edit-input{min-height:82px;resize:vertical}
 
 /* JavaGram-inspired multi-server management panel. */
 .tg-server-list{display:flex;flex-direction:column;gap:9px;margin:14px 0}
-.tg-server-card{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #e9edf4;border-radius:15px;background:#fff}
-.tg-server-mark{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#648cf5,#3e68d0);color:#fff;font-size:17px;font-weight:750}
+.tg-server-card{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #e3e8f0;border-radius:16px;background:linear-gradient(180deg,#fff,#fbfcfe);transition:border-color .18s,box-shadow .18s,transform .18s}.tg-server-card:focus-within,.tg-server-card:hover{border-color:#b9c9e8;box-shadow:0 7px 22px #203b6810;transform:translateY(-1px)}
+.tg-server-mark{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#648cf5,#3e68d0);color:#fff;font-size:18px;font-weight:750;box-shadow:inset 0 1px #ffffff55,0 3px 8px #3158a522}
 .tg-server-card-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
 .tg-server-card-copy strong{font-size:14px;color:#242832}
 .tg-server-card-copy small{overflow-wrap:anywhere;color:#89909c;font-size:11px;line-height:1.35}
