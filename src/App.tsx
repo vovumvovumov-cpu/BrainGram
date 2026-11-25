@@ -175,7 +175,7 @@ function AppContent() {
   const [bgServerError, setBgServerError] = useState("");
   const [activeBgServerId, setActiveBgServerId] = useState(() => localStorage.getItem("bg-active-server") || "braingram");
   const addBgServer = () => {
-    const match = bgServerAddress.trim().match(/^([a-zA-Z0-9.-]+):(\\d{1,5})$/);
+    const match = bgServerAddress.trim().match(/^([a-zA-Z0-9.-]+):(\d{1,5})$/);
     if (!match || Number(match[2]) < 1 || Number(match[2]) > 65535) { setBgServerError("Введи адрес в формате host:port, например chat.example.com:2398"); return; }
     const host = match[1].toLowerCase();
     const port = Number(match[2]);
